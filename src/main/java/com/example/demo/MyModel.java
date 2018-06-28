@@ -1,5 +1,6 @@
 package com.example.demo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.spark.api.java.JavaSparkContext;
 
 import java.time.LocalDateTime;
@@ -28,6 +29,7 @@ public class MyModel {
         this.jsc.stop();
     }
 
+    @JsonIgnore
     public JavaSparkContext getContext() {
         return jsc;
     }
@@ -47,6 +49,10 @@ public class MyModel {
 
     public MyModel setContent(String content) {
         this.content = content;
+        return this;
+    }
+    public MyModel addContent(String content) {
+        this.content = this.content+" "+content;
         return this;
     }
 

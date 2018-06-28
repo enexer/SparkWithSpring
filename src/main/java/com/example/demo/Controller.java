@@ -3,6 +3,7 @@ package com.example.demo;
 import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.codehaus.janino.Java;
 import org.spark_project.jetty.util.ConcurrentHashSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,12 +23,24 @@ public class Controller {
     private MyService service;
     private volatile static Hashtable<UUID, MyModel> runningTasks = new Hashtable<>();
     //private volatile static ConcurrentHashSet<MyModel> runningTasks = new ConcurrentHashSet<>();
-    private JavaSparkContext jsc;
+    //private JavaSparkContext jsc;
 
     @Autowired
     public Controller(MyService service) {
         this.service = service;
 
+//        SparkConf conf = new SparkConf()
+//                .setAppName("Spark_Experiment_Pi")
+//                .set("spark.driver.allowMultipleContexts", "true")
+//                .setMaster("local");
+//
+//        SparkContext context = new SparkContext(conf);
+//        JavaSparkContext jsc = new JavaSparkContext(context);
+//
+//        this.jsc = jsc;
+    }
+
+    private JavaSparkContext configureSpark(){
         SparkConf conf = new SparkConf()
                 .setAppName("Spark_Experiment_Pi")
                 .set("spark.driver.allowMultipleContexts", "true")
@@ -35,8 +48,7 @@ public class Controller {
 
         SparkContext context = new SparkContext(conf);
         JavaSparkContext jsc = new JavaSparkContext(context);
-
-        this.jsc = jsc;
+        return jsc;
     }
 
     @RequestMapping("/all")
@@ -77,6 +89,7 @@ public class Controller {
 
         LocalDateTime time = LocalDateTime.from(LocalDateTime.now());
         UUID uuid = UUID.randomUUID();
+        JavaSparkContext jsc = configureSpark();
         runningTasks.put(uuid, new MyModel(true, uuid, time, jsc));
         //new Thread(() -> service.ok(uuid, runningTasks)).start();
         new Thread(() -> service.ok2(uuid, runningTasks)).start();
@@ -108,5 +121,22 @@ public class Controller {
 
         runningTasks.entrySet().forEach(s -> s.getValue().stopTask());
         return "stopped all tasks";
+    }
+
+    // CLEAN TASKS
+    @RequestMapping(value = "/clean", method = RequestMethod.GET)
+    public String clean() {
+
+        int running = (int) runningTasks.entrySet()
+                .stream()
+                .filter(s -> s.getValue().getRunning().booleanValue()==true)
+                .count();
+
+        if(running>0){
+            return "CANNOT CLEAN, STOP TASKS BEFORE THIS ACTION";
+        }
+
+        runningTasks.clear();
+        return "cleaned all tasks";
     }
 }

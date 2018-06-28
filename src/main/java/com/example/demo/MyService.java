@@ -1,9 +1,11 @@
 package com.example.demo;
 
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.ui.ConsoleProgressBar;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.io.PrintStream;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -36,30 +38,29 @@ public class MyService {
     public void ok2(UUID uuid, Hashtable<UUID, MyModel> runningTasks){
 
         if (runningTasks.get(uuid).getRunning()){
-            runningTasks.get(uuid).setContent("in progress...");
+            runningTasks.get(uuid).addContent("in progress...");
 
             JavaSparkContext jsc = runningTasks.get(uuid).getContext();
 
             String res = computePi(jsc);
 
+            ConsoleProgressBar consoleProgressBar = new ConsoleProgressBar(jsc.sc());
+            consoleProgressBar.log();
 
-            runningTasks.get(uuid).setContent(res);
+
+            runningTasks.get(uuid).addContent(res);
         }
 
         LocalDateTime time = LocalDateTime.from(LocalDateTime.now());
 
         runningTasks.get(uuid)
                 .setRunning(false)
-                .setContent("finished")
+                .addContent("finished")
                 .setFinishTime(time);
     }
 
 
     public String computePi(JavaSparkContext jsc){
-
-        if(jsc.sc().isStopped()){
-            return "Cannot call methods on a stopped SparkContext.";
-        }
 
         int NUM_SAMPLES =100;
         List<Integer> l = new ArrayList<>(NUM_SAMPLES);
@@ -71,6 +72,10 @@ public class MyService {
                 e.printStackTrace();
             }
             System.out.println(i);
+        }
+
+        if(jsc.sc().isStopped()){
+            return "Cannot call methods on a stopped SparkContext.";
         }
 
         long count = jsc.parallelize(l).filter(i -> {
