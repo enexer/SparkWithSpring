@@ -39,15 +39,14 @@ public class MyService {
 
         if (runningTasks.get(uuid).getRunning()){
             runningTasks.get(uuid).addContent("in progress...");
-
             JavaSparkContext jsc = runningTasks.get(uuid).getContext();
+
 
             String res = computePi(jsc);
 
+
             ConsoleProgressBar consoleProgressBar = new ConsoleProgressBar(jsc.sc());
             consoleProgressBar.log();
-
-
             runningTasks.get(uuid).addContent(res);
         }
 
@@ -67,7 +66,7 @@ public class MyService {
         for (int i = 0; i < NUM_SAMPLES; i++) {
             l.add(i);
             try {
-                Thread.sleep(100);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -84,8 +83,10 @@ public class MyService {
             return x*x + y*y < 1.0;
         }).count();
         String res = ("Pi is roughly " + 4.0 * count / NUM_SAMPLES);
+
+        jsc.stop();  /// STOP CONTEXT !!!!!!!!!!!!!!!!!!!!!!!!!
+
         return res;
-        //jsc.stop();
     }
 
 }

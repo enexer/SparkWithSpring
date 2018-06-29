@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.NotFoundException;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -54,6 +56,26 @@ public class Controller {
     @RequestMapping("/all")
     public List<MyModel> getAll() {
 
+        List<MyModel> list = runningTasks.entrySet()
+                .stream()
+                .map(s -> s.getValue())
+                .collect(Collectors.toList());
+
+        return list;
+    }
+
+    public static String getUrl(HttpServletRequest req) {
+        String reqUrl = req.getRequestURL().toString();
+//        String queryString = req.getQueryString();   // d=789
+//        if (queryString != null) {
+//            reqUrl += "?"+queryString;
+//        }
+        return reqUrl;
+    }
+
+    @RequestMapping("/info")
+    public String getInfo() {
+
         int running = (int) runningTasks.entrySet()
                 .stream()
                 .filter(s -> s.getValue().getRunning().booleanValue() == true)
@@ -66,25 +88,19 @@ public class Controller {
 
         int total = running + finished;
 
-        List<MyModel> list = runningTasks.entrySet()
-                .stream()
-                .map(s -> s.getValue())
-                .collect(Collectors.toList());
 
-        return list;
-
-//        return "total tasks: "+total+"\n"+
-//                "running tasks: "+running+"\n"+
-//                "finished tasks: "+finished+"\n"+list.toString();
+        return "total tasks: "+total+"\n"+
+                "running tasks: "+running+"\n"+
+                "finished tasks: "+finished;
     }
 
 
     @RequestMapping("/")
-    public String index() {
+    public String index(HttpServletRequest request) {
 
         int running = (int) runningTasks.entrySet().stream().filter(s -> s.getValue().getRunning().booleanValue() == true).count();
-        if (running > 1) {
-            return "CANNOT START NEW TASK, MAX=2";
+        if (running > 0) {
+            return "CANNOT START NEW TASK, MAX=1";
         }
 
         LocalDateTime time = LocalDateTime.from(LocalDateTime.now());
@@ -93,33 +109,38 @@ public class Controller {
         runningTasks.put(uuid, new MyModel(true, uuid, time, jsc));
         //new Thread(() -> service.ok(uuid, runningTasks)).start();
         new Thread(() -> service.ok2(uuid, runningTasks)).start();
-        return uuid.toString();
+
+        return getUrl(request)+uuid.toString();
     }
 
     // SHOW BY ID
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public String getTask(@PathVariable String id) {
+    public MyModel getTask(@PathVariable String id) {
         if (!Optional.ofNullable(runningTasks.get(UUID.fromString(id))).isPresent()) {
-            return "BAD TASK ID";
+            throw new NotFoundException("ID NOT FOUND");
         }
-        return runningTasks.get(UUID.fromString(id)).getContent();
+        return runningTasks.get(UUID.fromString(id));
     }
 
     // STOP BY ID
     @RequestMapping(value = "/stop/{id}", method = RequestMethod.GET)
     public String stopTaskById(@PathVariable String id) {
         runningTasks.get(UUID.fromString(id)).setRunning(false);
+        runningTasks.get(UUID.fromString(id)).stopTask();
         return runningTasks.get(UUID.fromString(id)).getContent();
     }
 
     // STOP ALL
     @RequestMapping(value = "/stop", method = RequestMethod.GET)
     public String stopAllTasks() {
+
         runningTasks.entrySet()
                 .stream()
-                .map(s -> s.getValue().setRunning(false));
+                .forEach(s -> {
+                    runningTasks.get(s.getKey()).setRunning(false);
+                    runningTasks.get(s.getKey()).stopTask();
+                });
 
-        runningTasks.entrySet().forEach(s -> s.getValue().stopTask());
         return "stopped all tasks";
     }
 
