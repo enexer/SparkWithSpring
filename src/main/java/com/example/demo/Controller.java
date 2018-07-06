@@ -3,8 +3,6 @@ package com.example.demo;
 import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.codehaus.janino.Java;
-import org.spark_project.jetty.util.ConcurrentHashSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -110,7 +108,7 @@ public class Controller {
         //new Thread(() -> service.ok(uuid, runningTasks)).start();
         new Thread(() -> service.ok2(uuid, runningTasks)).start();
 
-        return getUrl(request)+uuid.toString();
+        return getUrl(request)+uuid.toString()+"\n"+jsc.sc().uiWebUrl().get();
     }
 
     // SHOW BY ID
