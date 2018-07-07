@@ -70,6 +70,7 @@ public class SparkService {
     }
 
     public String setMaster(SparkConf conf, String master) {
+        System.out.println("********************   "+master);
         conf.setMaster(master);
         return conf.get("spark.master");
     }
