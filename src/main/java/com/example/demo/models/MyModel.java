@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.spark.api.java.JavaSparkContext;

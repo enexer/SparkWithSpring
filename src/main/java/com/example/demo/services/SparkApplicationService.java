@@ -1,5 +1,7 @@
 package com.example.demo.services;
 
+import com.example.demo.exceptions.SparkContextStoppedException;
+import com.example.demo.exceptions.TaskException;
 import com.example.demo.models.MyModel;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.ui.ConsoleProgressBar;
@@ -22,11 +24,12 @@ public class SparkApplicationService {
     public void startTask(UUID uuid, Hashtable<UUID, MyModel> runningTasks) {
 
         if (runningTasks.get(uuid).getRunning()) {
-            runningTasks.get(uuid).addContent("in progress...");
             JavaSparkContext jsc = runningTasks.get(uuid).getContext();
+            if (jsc.sc().isStopped()) {
+                throw new SparkContextStoppedException("Cannot call methods on a stopped SparkContext.");
+            }
             String res;
-
-
+            runningTasks.get(uuid).addContent("in progress...");
             jsc.sc().log().info("###################################"+jsc.sc().logName());
 
             try {
@@ -35,6 +38,7 @@ public class SparkApplicationService {
                 runningTasks.get(uuid)
                         .setRunning(false)
                         .addContent(t.getMessage());
+                //throw new TaskException(t.getMessage());
                 return;
             }
 
@@ -59,7 +63,7 @@ public class SparkApplicationService {
         for (int i = 0; i < NUM_SAMPLES; i++) {
             l.add(i);
             try {
-                Thread.sleep(1000);
+                Thread.sleep(20);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -69,6 +73,7 @@ public class SparkApplicationService {
         if (jsc.sc().isStopped()) {
             return "Cannot call methods on a stopped SparkContext.";
         }
+        jsc.stop();
 
         long count = jsc.parallelize(l).filter(i -> {
             double x = Math.random();
