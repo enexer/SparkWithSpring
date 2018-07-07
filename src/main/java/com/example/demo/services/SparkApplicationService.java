@@ -1,10 +1,8 @@
 package com.example.demo.services;
 
 import com.example.demo.exceptions.SparkContextStoppedException;
-import com.example.demo.exceptions.TaskException;
 import com.example.demo.models.MyModel;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.ui.ConsoleProgressBar;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -42,13 +40,13 @@ public class SparkApplicationService {
                 return;
             }
 
-            ConsoleProgressBar consoleProgressBar = new ConsoleProgressBar(jsc.sc());
-            consoleProgressBar.log().info("HEHEHEE");
+            //ConsoleProgressBar consoleProgressBar = new ConsoleProgressBar(jsc.sc());
+            //consoleProgressBar.log().info("HEHEHEE");
 
             runningTasks.get(uuid).addContent(res);
         }
-        LocalDateTime time = LocalDateTime.from(LocalDateTime.now());
 
+        LocalDateTime time = LocalDateTime.from(LocalDateTime.now());
         runningTasks.get(uuid)
                 .setRunning(false)
                 .addContent("finished")
@@ -63,7 +61,7 @@ public class SparkApplicationService {
         for (int i = 0; i < NUM_SAMPLES; i++) {
             l.add(i);
             try {
-                Thread.sleep(20);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -73,7 +71,7 @@ public class SparkApplicationService {
         if (jsc.sc().isStopped()) {
             return "Cannot call methods on a stopped SparkContext.";
         }
-        jsc.stop();
+        //jsc.stop();
 
         long count = jsc.parallelize(l).filter(i -> {
             double x = Math.random();
@@ -82,7 +80,7 @@ public class SparkApplicationService {
         }).count();
         String res = ("Pi is roughly " + 4.0 * count / NUM_SAMPLES);
 
-        //jsc.stop();  /// STOP CONTEXT !!!!!!!!!!!!!!!!!!!!!!!!!
+        jsc.stop();  /// STOP CONTEXT !!!!!!!!!!!!!!!!!!!!!!!!!
 
         return res;
     }
