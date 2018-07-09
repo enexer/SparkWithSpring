@@ -23,7 +23,7 @@ public class TaskModel {
         this.uuid = uuid;
         this.startTime = startTime;
         this.jsc = jsc;
-        this.content = "start\n";
+        this.content = "Initialized";
     }
 
     public void stopTask(){

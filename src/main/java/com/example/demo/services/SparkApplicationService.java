@@ -5,6 +5,7 @@ import com.example.demo.models.TaskModel;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import sparktemplate.test.TestDBDataSet;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -60,7 +61,8 @@ public class SparkApplicationService {
 
 
     public String sparkTask(JavaSparkContext jsc){
-        return computePi(jsc);
+        //return computePi(jsc);
+        return TestDBDataSet.dbTest(jsc);
     }
 
     public String computePi(JavaSparkContext jsc) {
