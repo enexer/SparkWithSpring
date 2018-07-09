@@ -7,11 +7,13 @@ public class TasksInfoDto {
     private int total;
     private int running;
     private int finished;
+    private int runningSparkContexts;
 
-    public TasksInfoDto(int total, int running, int finished) {
+    public TasksInfoDto(int total, int running, int finished, int runningSparkContexts) {
         this.total = total;
         this.running = running;
         this.finished = finished;
+        this.runningSparkContexts = runningSparkContexts;
     }
 
     public int getTotal() {
@@ -36,5 +38,13 @@ public class TasksInfoDto {
 
     public void setFinished(int finished) {
         this.finished = finished;
+    }
+
+    public int getRunningSparkContexts() {
+        return runningSparkContexts;
+    }
+
+    public void setRunningSparkContexts(int runningSparkContexts) {
+        this.runningSparkContexts = runningSparkContexts;
     }
 }

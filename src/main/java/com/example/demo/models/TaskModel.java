@@ -9,15 +9,16 @@ import java.util.UUID;
 /**
  * Created by as on 29.06.2018.
  */
-public class MyModel {
+public class TaskModel {
     private Boolean running;
     private String content;
     private UUID uuid;
     private LocalDateTime startTime;
     private LocalDateTime finishTime;
+    private Long elapsedTime;
     private JavaSparkContext jsc;
 
-    public MyModel(Boolean running, UUID uuid, LocalDateTime startTime, JavaSparkContext jsc) {
+    public TaskModel(Boolean running, UUID uuid, LocalDateTime startTime, JavaSparkContext jsc) {
         this.running = running;
         this.uuid = uuid;
         this.startTime = startTime;
@@ -38,7 +39,7 @@ public class MyModel {
         return running;
     }
 
-    public MyModel setRunning(Boolean running) {
+    public TaskModel setRunning(Boolean running) {
         this.running = running;
         return this;
     }
@@ -47,11 +48,11 @@ public class MyModel {
         return content;
     }
 
-    public MyModel setContent(String content) {
+    public TaskModel setContent(String content) {
         this.content = content;
         return this;
     }
-    public MyModel addContent(String content) {
+    public TaskModel addContent(String content) {
         this.content = this.content+" "+content;
         return this;
     }
@@ -60,7 +61,7 @@ public class MyModel {
         return uuid;
     }
 
-    public MyModel setUuid(UUID uuid) {
+    public TaskModel setUuid(UUID uuid) {
         this.uuid = uuid;
         return this;
     }
@@ -69,7 +70,7 @@ public class MyModel {
         return startTime;
     }
 
-    public MyModel setStartTime(LocalDateTime startTime) {
+    public TaskModel setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
         return this;
     }
@@ -78,8 +79,17 @@ public class MyModel {
         return finishTime;
     }
 
-    public MyModel setFinishTime(LocalDateTime finishTime) {
+    public TaskModel setFinishTime(LocalDateTime finishTime) {
         this.finishTime = finishTime;
         return this;
+    }
+
+    public TaskModel setElapsedTime(Long elapsedTime) {
+        this.elapsedTime = elapsedTime;
+        return this;
+    }
+
+    public Long getElapsedTime() {
+        return elapsedTime;
     }
 }

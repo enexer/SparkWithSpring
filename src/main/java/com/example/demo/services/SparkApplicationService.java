@@ -1,7 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.exceptions.SparkContextStoppedException;
-import com.example.demo.models.MyModel;
+import com.example.demo.models.TaskModel;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -19,7 +19,9 @@ import java.util.UUID;
 public class SparkApplicationService {
 
     @Async
-    public void startTask(UUID uuid, Hashtable<UUID, MyModel> runningTasks) {
+    public void startTask(UUID uuid, Hashtable<UUID, TaskModel> runningTasks) {
+
+        long startMillis = 0;
 
         if (runningTasks.get(uuid).getRunning()) {
             JavaSparkContext jsc = runningTasks.get(uuid).getContext();
@@ -31,6 +33,7 @@ public class SparkApplicationService {
             jsc.sc().log().info("###################################"+jsc.sc().logName());
 
             try {
+                startMillis = System.currentTimeMillis();
                 res = computePi(jsc);
             } catch (Throwable t) {
                 runningTasks.get(uuid)
@@ -47,10 +50,12 @@ public class SparkApplicationService {
         }
 
         LocalDateTime time = LocalDateTime.from(LocalDateTime.now());
+        Long elapsedTime = System.currentTimeMillis()-startMillis;
         runningTasks.get(uuid)
                 .setRunning(false)
                 .addContent("finished")
-                .setFinishTime(time);
+                .setFinishTime(time)
+                .setElapsedTime(elapsedTime);
     }
 
 
@@ -71,7 +76,6 @@ public class SparkApplicationService {
         if (jsc.sc().isStopped()) {
             return "Cannot call methods on a stopped SparkContext.";
         }
-        //jsc.stop();
 
         long count = jsc.parallelize(l).filter(i -> {
             double x = Math.random();

@@ -2,7 +2,7 @@ package com.example.demo.controllers;
 
 import com.example.demo.dto.TaskUrlDto;
 import com.example.demo.dto.TasksInfoDto;
-import com.example.demo.models.MyModel;
+import com.example.demo.models.TaskModel;
 import com.example.demo.services.SparkApplicationService;
 import com.example.demo.services.SparkService;
 import org.apache.spark.SparkConf;
@@ -21,7 +21,7 @@ import java.util.*;
 public class Controller {
     private SparkApplicationService sparkApplicationService;
     private SparkService sparkService;
-    private volatile static Hashtable<UUID, MyModel> runningTasks = new Hashtable<>();
+    private volatile static Hashtable<UUID, TaskModel> runningTasks = new Hashtable<>();
     private SparkConf conf;
 
     @Autowired
@@ -29,14 +29,14 @@ public class Controller {
         this.sparkService = sparkService;
         this.sparkApplicationService = sparkApplicationService;
         conf = new SparkConf()
-                .setAppName("Spark_Experiment_Pi")
+                .setAppName("Apache_Spark_Application")
                 .set("spark.driver.allowMultipleContexts", "true")
                 .setMaster("local");
     }
 
     // GET ALL TASKS
     @GetMapping("/all")
-    public ResponseEntity<Iterable<MyModel>> getAllTasks() {
+    public ResponseEntity<Iterable<TaskModel>> getAllTasks() {
         return new ResponseEntity<>(sparkService.getAllTasks(runningTasks), HttpStatus.OK);
     }
 
@@ -66,13 +66,13 @@ public class Controller {
 
     // GET TASK BY ID
     @GetMapping(value = "/{id}")
-    public ResponseEntity<MyModel> getTask(@PathVariable String id) {
+    public ResponseEntity<TaskModel> getTask(@PathVariable String id) {
         return new ResponseEntity<>(sparkService.getTask(runningTasks, id), HttpStatus.OK);
     }
 
     // STOP TASK BY ID
     @GetMapping(value = "/stop/{id}")
-    public ResponseEntity<MyModel> stopTaskById(@PathVariable String id) {
+    public ResponseEntity<TaskModel> stopTaskById(@PathVariable String id) {
         return new ResponseEntity<>(sparkService.stopTaskById(runningTasks, id), HttpStatus.OK);
     }
 
