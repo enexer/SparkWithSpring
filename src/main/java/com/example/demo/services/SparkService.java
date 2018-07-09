@@ -3,6 +3,7 @@ package com.example.demo.services;
 import com.example.demo.configuration.SparkConfiguartion;
 import com.example.demo.dto.TaskUrlDto;
 import com.example.demo.dto.TasksInfoDto;
+import com.example.demo.exceptions.SparkMasterUrlException;
 import com.example.demo.exceptions.TaskExistException;
 import com.example.demo.exceptions.TaskNotFoundException;
 import com.example.demo.models.TaskModel;
@@ -40,7 +41,12 @@ public class SparkService {
     }
 
     public JavaSparkContext configureSpark(SparkConf conf) {
-        SparkContext context = new SparkContext(conf);
+        SparkContext context;
+        try {
+            context = new SparkContext(conf);
+        }catch (Exception e){
+            throw new SparkMasterUrlException(e.getMessage());
+        }
         JavaSparkContext jsc = new JavaSparkContext(context);
         return jsc;
     }
