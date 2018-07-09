@@ -34,7 +34,7 @@ public class SparkApplicationService {
 
             try {
                 startMillis = System.currentTimeMillis();
-                res = computePi(jsc);
+                res = sparkTask(jsc);
             } catch (Throwable t) {
                 runningTasks.get(uuid)
                         .setRunning(false)
@@ -58,6 +58,10 @@ public class SparkApplicationService {
                 .setElapsedTime(elapsedTime);
     }
 
+
+    public String sparkTask(JavaSparkContext jsc){
+        return computePi(jsc);
+    }
 
     public String computePi(JavaSparkContext jsc) {
 
@@ -84,7 +88,7 @@ public class SparkApplicationService {
         }).count();
         String res = ("Pi is roughly " + 4.0 * count / NUM_SAMPLES);
 
-        jsc.stop();  /// STOP CONTEXT !!!!!!!!!!!!!!!!!!!!!!!!!
+        //jsc.stop();  /// STOP CONTEXT !!!!!!!!!!!!!!!!!!!!!!!!!
 
         return res;
     }
