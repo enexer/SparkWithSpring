@@ -9,10 +9,7 @@ import org.apache.spark.SparkConf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -38,55 +35,55 @@ public class Controller {
     }
 
     // GET ALL TASKS
-    @RequestMapping("/all")
+    @GetMapping("/all")
     public ResponseEntity<Iterable<MyModel>> getAllTasks() {
         return new ResponseEntity<>(sparkService.getAllTasks(runningTasks), HttpStatus.OK);
     }
 
     // GET TASKS SUMMARY INFO
-    @RequestMapping("/info")
+    @GetMapping("/info")
     public ResponseEntity<TasksInfoDto> getTasksInfo() {
         return new ResponseEntity<>(sparkService.getTasksInfo(runningTasks), HttpStatus.OK);
     }
 
     // SET MASTER
-    @RequestMapping(value = "/master/{master}", method = RequestMethod.GET)
-    public ResponseEntity<String> setMaster(@PathVariable String master) {
+    @GetMapping("/master/set")
+    public ResponseEntity<String> setMaster(@RequestParam(name="master", required=false, defaultValue="local") String master) {
         return new ResponseEntity<>(sparkService.setMaster(conf, master), HttpStatus.OK);
     }
 
     // GET MASTER
-    @RequestMapping(value = "/master", method = RequestMethod.GET)
+    @GetMapping(value = "/master")
     public ResponseEntity<String> getMaster() {
         return new ResponseEntity<>(sparkService.getMaster(conf), HttpStatus.OK);
     }
 
     // START TASK
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @GetMapping(value = "/")
     public ResponseEntity<TaskUrlDto> startTask(HttpServletRequest request) {
         return new ResponseEntity<>(sparkService.startTask(runningTasks, conf, request), HttpStatus.OK);
     }
 
     // GET TASK BY ID
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/{id}")
     public ResponseEntity<MyModel> getTask(@PathVariable String id) {
         return new ResponseEntity<>(sparkService.getTask(runningTasks, id), HttpStatus.OK);
     }
 
     // STOP TASK BY ID
-    @RequestMapping(value = "/stop/{id}", method = RequestMethod.GET)
+    @GetMapping(value = "/stop/{id}")
     public ResponseEntity<MyModel> stopTaskById(@PathVariable String id) {
         return new ResponseEntity<>(sparkService.stopTaskById(runningTasks, id), HttpStatus.OK);
     }
 
     // STOP ALL
-    @RequestMapping(value = "/stop", method = RequestMethod.GET)
+    @GetMapping(value = "/stop")
     public ResponseEntity<String> stopAllTasks() {
         return new ResponseEntity<>(sparkService.stopAllTasks(runningTasks), HttpStatus.OK);
     }
 
     // CLEAN INFO ABOUT TASKS
-    @RequestMapping(value = "/clean", method = RequestMethod.GET)
+    @GetMapping(value = "/clean")
     public ResponseEntity<String> clean() {
         return new ResponseEntity<>(sparkService.clean(runningTasks), HttpStatus.OK);
     }
