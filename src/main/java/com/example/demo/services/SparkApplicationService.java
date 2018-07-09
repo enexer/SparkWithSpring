@@ -5,6 +5,7 @@ import com.example.demo.models.TaskModel;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import sparktemplate.test.TestClustering;
 import sparktemplate.test.TestDBDataSet;
 
 import java.time.LocalDateTime;
@@ -25,17 +26,20 @@ public class SparkApplicationService {
         long startMillis = 0;
 
         if (runningTasks.get(uuid).getRunning()) {
+
             JavaSparkContext jsc = runningTasks.get(uuid).getContext();
+            String task = runningTasks.get(uuid).getTask();
+
             if (jsc.sc().isStopped()) {
                 throw new SparkContextStoppedException("Cannot call methods on a stopped SparkContext.");
             }
             String res;
             runningTasks.get(uuid).addContent("in progress...");
-            jsc.sc().log().info("###################################"+jsc.sc().logName());
+            jsc.sc().log().info("###################################" + jsc.sc().logName());
 
             try {
                 startMillis = System.currentTimeMillis();
-                res = sparkTask(jsc);
+                res = sparkTask(jsc,task);
             } catch (Throwable t) {
                 runningTasks.get(uuid)
                         .setRunning(false)
@@ -51,7 +55,7 @@ public class SparkApplicationService {
         }
 
         LocalDateTime time = LocalDateTime.from(LocalDateTime.now());
-        Long elapsedTime = System.currentTimeMillis()-startMillis;
+        Long elapsedTime = System.currentTimeMillis() - startMillis;
         runningTasks.get(uuid)
                 .setRunning(false)
                 .addContent("finished")
@@ -60,9 +64,18 @@ public class SparkApplicationService {
     }
 
 
-    public String sparkTask(JavaSparkContext jsc){
-        //return computePi(jsc);
-        return TestDBDataSet.dbTest(jsc);
+    public String sparkTask(JavaSparkContext jsc, String task) {
+        String ww = null;
+        //jsc.stop();
+        if (task.equals("1")){
+            ww = computePi(jsc);
+        }else if (task.equals("2")){
+            ww = TestDBDataSet.dbTest(jsc);
+        }else if (task.equals("3")){
+            ww = TestClustering.dbTest(jsc);
+        }
+
+        return ww;
     }
 
     public String computePi(JavaSparkContext jsc) {
@@ -76,7 +89,7 @@ public class SparkApplicationService {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-            System.out.println(i);
+           // System.out.println(i);
         }
 
         if (jsc.sc().isStopped()) {

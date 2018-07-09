@@ -17,13 +17,15 @@ public class TaskModel {
     private LocalDateTime finishTime;
     private Long elapsedTime;
     private JavaSparkContext jsc;
+    private String task;
 
-    public TaskModel(Boolean running, UUID uuid, LocalDateTime startTime, JavaSparkContext jsc) {
+    public TaskModel(Boolean running, UUID uuid, LocalDateTime startTime, JavaSparkContext jsc, String task) {
         this.running = running;
         this.uuid = uuid;
         this.startTime = startTime;
         this.jsc = jsc;
         this.content = "Initialized";
+        this.task=task;
     }
 
     public void stopTask(){
@@ -91,5 +93,13 @@ public class TaskModel {
 
     public Long getElapsedTime() {
         return elapsedTime;
+    }
+
+    public String getTask() {
+        return task;
+    }
+
+    public void setTask(String task) {
+        this.task = task;
     }
 }

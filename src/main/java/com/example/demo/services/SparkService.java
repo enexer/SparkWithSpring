@@ -10,9 +10,15 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Hashtable;
 import java.util.List;
@@ -49,8 +55,11 @@ public class SparkService {
     }
 
     public static String getUrl(HttpServletRequest req) {
-        String reqUrl = req.getRequestURL().toString();
-        return reqUrl;
+        return getBaseUrl(req)+"/";
+    }
+
+    public static String getBaseUrl(HttpServletRequest req) {
+        return req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath();
     }
 
     public TasksInfoDto getTasksInfo(Hashtable<UUID, TaskModel> runningTasks) {
@@ -72,7 +81,7 @@ public class SparkService {
 
         int total = running + finished;
 
-        return new TasksInfoDto(total,running,finished,runningSparkContexts);
+        return new TasksInfoDto(total, running, finished, runningSparkContexts);
     }
 
     public String setMaster(SparkConf conf, String master) {
@@ -84,25 +93,25 @@ public class SparkService {
         return conf.get("spark.master");
     }
 
-    public TaskUrlDto startTask(Hashtable<UUID, TaskModel> runningTasks, SparkConf conf, HttpServletRequest request) {
+    public TaskUrlDto startTask(Hashtable<UUID, TaskModel> runningTasks, SparkConf conf, HttpServletRequest request, String task) {
 
         int maxTasks = SparkConfiguartion.MAX_RUNNING_TASKS;
         int running = (int) runningTasks.entrySet().stream().filter(s -> s.getValue().getRunning().booleanValue() == true).count();
         if (running >= maxTasks) {
-            throw new TaskExistException("Cannot start new task, running tasks limit="+maxTasks);
+            throw new TaskExistException("Cannot start new task, running tasks limit=" + maxTasks);
         }
 
         LocalDateTime time = LocalDateTime.from(LocalDateTime.now());
         UUID uuid = UUID.randomUUID();
         JavaSparkContext jsc = configureSpark(conf);
-        runningTasks.put(uuid, new TaskModel(true, uuid, time, jsc));
+        runningTasks.put(uuid, new TaskModel(true, uuid, time, jsc, task));
         new Thread(() -> sparkApplicationService.startTask(uuid, runningTasks)).start();
-        return new TaskUrlDto(getUrl(request) + uuid.toString(),jsc.sc().uiWebUrl().get());
+        return new TaskUrlDto(getUrl(request) + uuid.toString(), jsc.sc().uiWebUrl().get());
     }
 
     public TaskModel getTask(Hashtable<UUID, TaskModel> runningTasks, String id) {
         if (!Optional.ofNullable(runningTasks.get(UUID.fromString(id))).isPresent()) {
-            throw new TaskNotFoundException("Task with id="+id+" not found.");
+            throw new TaskNotFoundException("Task with id=" + id + " not found.");
         }
         return runningTasks.get(UUID.fromString(id));
     }

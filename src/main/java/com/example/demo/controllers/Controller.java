@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -59,9 +60,9 @@ public class Controller {
     }
 
     // START TASK
-    @GetMapping(value = "/")
-    public ResponseEntity<TaskUrlDto> startTask(HttpServletRequest request) {
-        return new ResponseEntity<>(sparkService.startTask(runningTasks, conf, request), HttpStatus.OK);
+    @GetMapping(value = "/start")
+    public ResponseEntity<TaskUrlDto> startTask(@RequestParam(name="task", required=false, defaultValue="1") String task, HttpServletRequest request) {
+        return new ResponseEntity<>(sparkService.startTask(runningTasks, conf, request, task), HttpStatus.OK);
     }
 
     // GET TASK BY ID
