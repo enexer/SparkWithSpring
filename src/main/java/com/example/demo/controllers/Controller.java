@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.configuration.PropertiesModel;
 import com.example.demo.dto.TaskUrlDto;
 import com.example.demo.dto.TasksInfoDto;
 import com.example.demo.models.TaskModel;
@@ -32,7 +33,8 @@ public class Controller {
         conf = new SparkConf()
                 .setAppName("Apache_Spark_Application")
                 .set("spark.driver.allowMultipleContexts", "true")
-                .setMaster("local");
+                .setMaster(PropertiesModel.master);
+                //.setMaster("local");
     }
 
     // GET ALL TASKS

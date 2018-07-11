@@ -18,10 +18,12 @@ public class DemoApplication {
         System.out.println("propertiesPath: " + propertiesPath);
         String fullPath = propertiesPath + File.separator + propName;
 
-        if (!PropertiesUtils.readProperties(fullPath)) {
+        if (!PropertiesUtils.readProperties(fullPath, PropertiesModel.class)) {
             PropertiesUtils.createProperties(fullPath, PropertiesModel.class);
-            PropertiesUtils.readProperties(fullPath);
+            PropertiesUtils.readProperties(fullPath, PropertiesModel.class);
         }
+
+        System.out.println("CONFIG: " + PropertiesModel.appJar + " " + PropertiesModel.master);
 
         SpringApplication.run(DemoApplication.class, args);
     }
