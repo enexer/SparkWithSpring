@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Created by as on 11.07.2018.
  */
-public class Properties {
+public class PropertiesUtils {
 
     public static boolean readProperties(String fullPath) {
         System.out.println("READ PROPERTIES");
