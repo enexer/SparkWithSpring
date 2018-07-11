@@ -39,8 +39,12 @@ public class Controller {
         conf = new SparkConf()
                 .setAppName("Apache_Spark_Application")
                 .set("spark.driver.allowMultipleContexts", "true")
+                .set("spark.executor.memory", "4g")
+                //.set("spark.executor.cores", "4c")
                 .setJars(new String[]{PropertiesModel.mainAppJar, "local:/root/.ivy2/jars/org.postgresql_postgresql-42.1.1.jar"})
-                .set("spark.driver.host", "10.2.28.34")
+                // DLA KLASTRA ZMIENIC LUB USUNAC
+                .set("spark.driver.host", PropertiesModel.driver)
+                //.set("spark.dynamicAllocation.enabled", "false")
                 .setMaster(PropertiesModel.master);
         //.setMaster("local");
     }
