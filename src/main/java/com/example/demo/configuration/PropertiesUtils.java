@@ -2,6 +2,7 @@ package com.example.demo.configuration;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -10,7 +11,7 @@ import java.util.Map;
  */
 public class PropertiesUtils {
 
-    public static boolean readProperties(String fullPath) {
+    public static boolean readProperties(String fullPath, Class c) {
         System.out.println("READ PROPERTIES");
         InputStream in;
         try {
@@ -28,6 +29,27 @@ public class PropertiesUtils {
         }
 
         properties.stringPropertyNames().forEach(s -> System.out.println(s + " = " + properties.getProperty(s)));
+
+
+        properties.stringPropertyNames().forEach(s -> {
+//            if (s.equals("master")){
+//                PropertiesModel.master=properties.getProperty(s);
+//            }else if(s.equals("appJar")){
+//                PropertiesModel.appJar=properties.getProperty(s);
+//            }
+
+            for (Field f : c.getDeclaredFields()){
+                try {
+                    PropertiesModel.setValue(f.getName(), s, c);
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        });
+
         return true;
     }
 
