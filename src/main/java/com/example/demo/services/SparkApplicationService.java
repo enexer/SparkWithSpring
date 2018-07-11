@@ -3,6 +3,8 @@ package com.example.demo.services;
 import com.example.demo.exceptions.SparkContextStoppedException;
 import com.example.demo.models.TaskModel;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.launcher.SparkAppHandle;
+import org.apache.spark.launcher.SparkLauncher;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import sparktemplate.test.TestClustering;

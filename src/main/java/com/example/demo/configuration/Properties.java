@@ -9,7 +9,7 @@ import java.util.Map;
  * Created by as on 11.07.2018.
  */
 public class Properties {
-    
+
     public static boolean readProperties(String fullPath) {
         System.out.println("READ PROPERTIES");
         InputStream in;
