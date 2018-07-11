@@ -68,7 +68,6 @@ public class SparkApplicationService {
 
     public String sparkTask(JavaSparkContext jsc, String task) {
         String ww = null;
-        //jsc.stop();
         if (task.equals("1")){
             ww = computePi(jsc);
         }else if (task.equals("2")){
@@ -76,7 +75,7 @@ public class SparkApplicationService {
         }else if (task.equals("3")){
             ww = TestClustering.dbTest(jsc);
         }
-
+        jsc.stop();
         return ww;
     }
 

@@ -1,5 +1,6 @@
 package com.example.demo.services;
 
+import com.example.demo.configuration.PropertiesModel;
 import com.example.demo.configuration.SparkConfiguartion;
 import com.example.demo.dto.TaskUrlDto;
 import com.example.demo.dto.TasksInfoDto;
@@ -11,15 +12,9 @@ import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Hashtable;
 import java.util.List;
@@ -58,6 +53,10 @@ public class SparkService {
                 .collect(Collectors.toList());
 
         return list;
+    }
+
+    public static String getProperties(){
+        return PropertiesModel.printAll();
     }
 
     public static String getUrl(HttpServletRequest req) {

@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.DemoApplication;
 import com.example.demo.configuration.PropertiesModel;
 import com.example.demo.dto.TaskUrlDto;
 import com.example.demo.dto.TasksInfoDto;
@@ -14,6 +15,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -30,11 +35,14 @@ public class Controller {
     public Controller(SparkService sparkService, SparkApplicationService sparkApplicationService) {
         this.sparkService = sparkService;
         this.sparkApplicationService = sparkApplicationService;
+
         conf = new SparkConf()
                 .setAppName("Apache_Spark_Application")
                 .set("spark.driver.allowMultipleContexts", "true")
+                .setJars(new String[]{PropertiesModel.mainAppJar, "local:/root/.ivy2/jars/org.postgresql_postgresql-42.1.1.jar"})
+                .set("spark.driver.host", "10.2.28.34")
                 .setMaster(PropertiesModel.master);
-                //.setMaster("local");
+        //.setMaster("local");
     }
 
     // GET ALL TASKS
@@ -49,9 +57,15 @@ public class Controller {
         return new ResponseEntity<>(sparkService.getTasksInfo(runningTasks), HttpStatus.OK);
     }
 
+    // GET PROPERTIES
+    @GetMapping("/prop")
+    public ResponseEntity<String> getProperties() {
+        return new ResponseEntity<>(sparkService.getProperties(), HttpStatus.OK);
+    }
+
     // SET MASTER
     @GetMapping("/master/set")
-    public ResponseEntity<String> setMaster(@RequestParam(name="master", required=false, defaultValue="local") String master) {
+    public ResponseEntity<String> setMaster(@RequestParam(name = "master", required = false, defaultValue = "local") String master) {
         return new ResponseEntity<>(sparkService.setMaster(conf, master), HttpStatus.OK);
     }
 
@@ -63,7 +77,7 @@ public class Controller {
 
     // START TASK
     @GetMapping(value = "/start")
-    public ResponseEntity<TaskUrlDto> startTask(@RequestParam(name="task", required=false, defaultValue="1") String task, HttpServletRequest request) {
+    public ResponseEntity<TaskUrlDto> startTask(@RequestParam(name = "task", required = false, defaultValue = "1") String task, HttpServletRequest request) {
         return new ResponseEntity<>(sparkService.startTask(runningTasks, conf, request, task), HttpStatus.OK);
     }
 
