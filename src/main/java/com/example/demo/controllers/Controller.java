@@ -1,7 +1,7 @@
 package com.example.demo.controllers;
 
-import com.example.demo.DemoApplication;
 import com.example.demo.configuration.PropertiesModel;
+import com.example.demo.configuration.PropertiesUtils;
 import com.example.demo.dto.TaskUrlDto;
 import com.example.demo.dto.TasksInfoDto;
 import com.example.demo.models.TaskModel;
@@ -12,13 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -41,7 +36,8 @@ public class Controller {
                 .set("spark.driver.allowMultipleContexts", "true")
                 .set("spark.executor.memory", "4g")
                 //.set("spark.executor.cores", "4c")
-                .setJars(new String[]{PropertiesModel.mainAppJar, "local:/root/.ivy2/jars/org.postgresql_postgresql-42.1.1.jar"})
+                //.setJars(new String[]{PropertiesModel.jars, PropertiesModel.databaseJar})
+                .setJars(PropertiesUtils.getJars(PropertiesModel.jars,PropertiesUtils.delimiter))
                 // DLA KLASTRA ZMIENIC LUB USUNAC
                 .set("spark.driver.host", PropertiesModel.driver)
                 //.set("spark.dynamicAllocation.enabled", "false")

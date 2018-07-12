@@ -1,5 +1,4 @@
 package com.example.demo.configuration;
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -8,15 +7,12 @@ import java.lang.reflect.Method;
  */
 public class PropertiesModel {
     public static String master;
-    //public static String mainAppJar = DemoApplication.getParentDirectoryFromJar() + File.separator + "artifact" + ".jar";
-    public static String mainAppJar;
-    public static String databaseJar;
+    public static String jars;
     public static String driver;
 
     public static String printAll() {
         return PropertiesModel.master + "\n" +
-                PropertiesModel.mainAppJar + "\n" +
-                PropertiesModel.databaseJar+"\n"+
+                PropertiesModel.jars + "\n" +
                 PropertiesModel.driver;
     }
 
@@ -24,12 +20,8 @@ public class PropertiesModel {
         PropertiesModel.master = master;
     }
 
-    public static void setMainAppJar(String mainAppJar) {
-        PropertiesModel.mainAppJar = mainAppJar;
-    }
-
-    public static void setDatabaseJar(String databaseJar) {
-        PropertiesModel.databaseJar = databaseJar;
+    public static void setJars(String jars) {
+        PropertiesModel.jars = jars;
     }
 
     public static void setDriver(String driver) { PropertiesModel.driver = driver; }

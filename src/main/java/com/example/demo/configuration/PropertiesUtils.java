@@ -1,15 +1,23 @@
 package com.example.demo.configuration;
 
+import com.example.demo.exceptions.SparkMasterUrlException;
+
 import java.io.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by as on 11.07.2018.
  */
 public class PropertiesUtils {
+
+    public static String delimiter;
+    public static String properties;
+    public static String artifact;
 
     public static boolean readProperties(String fullPath, Class c) {
         System.out.println(printNoticeable("READ PROPERTIES"));
@@ -108,6 +116,17 @@ public class PropertiesUtils {
 
         }
         return fullPath;
+    }
+
+    public static String[] getJars(String input, String delimiter) {
+        if (input==null){
+            throw new NullPointerException("String with jars with provided delimiter '"+delimiter+"' is empty. Check "+properties+".");
+        }
+        String[] jars = Arrays.stream(input.split(delimiter))
+                // REMOVE WHITESPACES
+                .map(s -> s.replaceAll("\\s+",""))
+                .collect(Collectors.toList()).toArray(new String[]{});
+        return jars;
     }
 
     public static String printNoticeable(String name){
