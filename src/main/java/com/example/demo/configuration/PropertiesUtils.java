@@ -12,7 +12,7 @@ import java.util.Map;
 public class PropertiesUtils {
 
     public static boolean readProperties(String fullPath, Class c) {
-        System.out.println("READ PROPERTIES");
+        System.out.println(printNoticeable("READ PROPERTIES"));
         InputStream in;
         try {
             in = new FileInputStream(fullPath);
@@ -28,8 +28,9 @@ public class PropertiesUtils {
             e.printStackTrace();
         }
 
+        System.out.println(printNoticeable("PROPERTIES"));
         properties.stringPropertyNames().forEach(s -> System.out.println(s + " = " + properties.getProperty(s)));
-
+        System.out.println(printNoticeable("PROPERTIES"));
 
         properties.stringPropertyNames().forEach(s -> {
 //            if (s.equals("master")){
@@ -54,7 +55,7 @@ public class PropertiesUtils {
     }
 
     private static Map<String, String> loadProperties(Class c) throws IllegalAccessException {
-        System.out.println("LOAD PROPERTIES");
+        System.out.println(printNoticeable("LOAD PROPERTIES"));
         Map<String, String> propMap = new HashMap<>();
         for (Field f : c.getDeclaredFields()) {
             String name = f.getName();
@@ -70,7 +71,7 @@ public class PropertiesUtils {
     }
 
     public static String createProperties(String fullPath, Class c) {
-        System.out.println("CREATE PROPERTIES");
+        System.out.println(printNoticeable("CREATE PROPERTIES"));
         java.util.Properties prop = new java.util.Properties();
         OutputStream output = null;
 
@@ -107,5 +108,10 @@ public class PropertiesUtils {
 
         }
         return fullPath;
+    }
+
+    public static String printNoticeable(String name){
+        String lines ="---------------------------";
+        return lines+name+lines;
     }
 }

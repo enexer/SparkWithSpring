@@ -1,7 +1,4 @@
 package com.example.demo.configuration;
-
-import com.example.demo.DemoApplication;
-
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,10 +7,11 @@ import java.lang.reflect.Method;
  * Created by as on 11.07.2018.
  */
 public class PropertiesModel {
-    public static String master = "spark://10.2.28.17:7077";
-    public static String mainAppJar = DemoApplication.getParentDirectoryFromJar() + File.separator + "artifact" + ".jar";
-    public static String databaseJar = "local:/root/.ivy2/jars/org.postgresql_postgresql-42.1.1.jar";
-    public static String driver = "10.2.28.34";
+    public static String master;
+    //public static String mainAppJar = DemoApplication.getParentDirectoryFromJar() + File.separator + "artifact" + ".jar";
+    public static String mainAppJar;
+    public static String databaseJar;
+    public static String driver;
 
     public static String printAll() {
         return PropertiesModel.master + "\n" +

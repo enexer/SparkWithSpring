@@ -79,7 +79,7 @@ public class SparkApplicationService {
         return ww;
     }
 
-    public String computePi(JavaSparkContext jsc) {
+    public static String computePi(JavaSparkContext jsc) {
 
         int NUM_SAMPLES = 100;
         List<Integer> l = new ArrayList<>(NUM_SAMPLES);
