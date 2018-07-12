@@ -15,7 +15,8 @@ public class DemoApplication {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
 
-        String jarPath = DemoApplication.getParentDirectoryFromJar() + File.separator + "artifact" + ".jar";
+
+        String jarPath = File.separator + getParentDirectoryFromJar() + File.separator + "artifact" + ".jar";
         System.out.println("ARTIFACT PATH: " + jarPath);
 
 
@@ -33,7 +34,7 @@ public class DemoApplication {
         String propName = "config.properties";
         String propertiesPath = System.getProperty("user.dir");
         System.out.println("Properties path: " + propertiesPath);
-        String fullPath = getParentDirectoryFromJar() + File.separator + propName;
+        String fullPath = File.separator + getParentDirectoryFromJar() + File.separator + propName;
 
         if (!PropertiesUtils.readProperties(fullPath, PropertiesModel.class)) {
             PropertiesUtils.createProperties(fullPath, PropertiesModel.class);
