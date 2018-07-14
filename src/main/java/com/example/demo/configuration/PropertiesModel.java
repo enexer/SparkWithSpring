@@ -8,9 +8,11 @@ import java.lang.reflect.Method;
  * Created by as on 11.07.2018.
  */
 public class PropertiesModel {
-    public static String master = "";
     public static String jars = "";
-    public static String driver = "";
+    public static String spark_master = "";
+    public static String spark_driver_host = "";
+    public static String spark_driver_port = "";
+    public static String spark_blockManager_port = "";
 
     public static String printAll() throws IllegalAccessException {
         StringBuffer stringBuffer = new StringBuffer();

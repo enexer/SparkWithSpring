@@ -18,6 +18,7 @@ public class TaskModel {
     private Long elapsedTime;
     private JavaSparkContext jsc;
     private String task;
+    private String appHistoryUrl;
 
     public TaskModel(Boolean running, UUID uuid, LocalDateTime startTime, JavaSparkContext jsc, String task) {
         this.running = running;
@@ -101,5 +102,14 @@ public class TaskModel {
 
     public void setTask(String task) {
         this.task = task;
+    }
+
+    public String getAppHistoryUrl() {
+        return appHistoryUrl;
+    }
+
+    public TaskModel setAppHistoryUrl(String appHistoryUrl) {
+        this.appHistoryUrl = appHistoryUrl;
+        return this;
     }
 }

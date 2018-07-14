@@ -58,9 +58,12 @@ public class SparkApplicationService {
 
         LocalDateTime time = LocalDateTime.from(LocalDateTime.now());
         Long elapsedTime = System.currentTimeMillis() - startMillis;
+        String appId = runningTasks.get(uuid).getContext().sc().applicationId();
+
         runningTasks.get(uuid)
                 .setRunning(false)
                 .addContent("finished")
+                .setAppHistoryUrl("master:18080/"+appId)
                 .setFinishTime(time)
                 .setElapsedTime(elapsedTime);
     }

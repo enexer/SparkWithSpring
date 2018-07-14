@@ -117,7 +117,13 @@ public class SparkService {
         JavaSparkContext jsc = configureSpark(conf);
         runningTasks.put(uuid, new TaskModel(true, uuid, time, jsc, task));
         new Thread(() -> sparkApplicationService.startTask(uuid, runningTasks)).start();
-        return new TaskUrlDto(getUrl(request) + uuid.toString(), jsc.sc().uiWebUrl().get());
+        TaskUrlDto taskUrlDto = new TaskUrlDto();
+        taskUrlDto.setTaskUrl(getUrl(request) + uuid.toString());
+        taskUrlDto.setWebUiUrl( jsc.sc().uiWebUrl().get());
+        taskUrlDto.setAppId(jsc.sc().applicationId());
+        taskUrlDto.setAppName(jsc.sc().appName());
+        return taskUrlDto;
+       // return new TaskUrlDto(getUrl(request) + uuid.toString(), jsc.sc().uiWebUrl().get());
     }
 
     public TaskModel getTask(Hashtable<UUID, TaskModel> runningTasks, String id) {

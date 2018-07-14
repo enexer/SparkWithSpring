@@ -35,11 +35,12 @@ public class Controller {
                 .setAppName("Apache_Spark_Application")
                 .set("spark.driver.allowMultipleContexts", "true")
                 .set("spark.executor.memory", "1g")
-                //.set("spark.submit.deployMode", "cluster") //
-                //.set("spark.driver.port", "51310") //
+                //.set("spark.submit.deployMode", "cluster") // startPort should be between 1024 and 65535 (inclusive), or 0 for a random free port.
+                .set("spark.driver.host", PropertiesModel.spark_driver_host)
+                .set("spark.driver.port", PropertiesModel.spark_driver_port) //
+                .set("spark.blockManager.port", PropertiesModel.spark_blockManager_port) // Raw socket via ServerSocketChannel
                 ///
                 .set("spark.cores.max","4")
-                ///
                 .set("spark.eventLog.enabled", "true")
                 //.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
 //                .set("spark.shuffle.service.enabled", "false")
@@ -49,9 +50,8 @@ public class Controller {
                 //.set("spark.executor.cores", "4c")
                 //.setJars(new String[]{PropertiesModel.jars, PropertiesModel.databaseJar})
                 .setJars(PropertiesUtils.getJars(PropertiesModel.jars,PropertiesUtils.delimiter))
-                .set("spark.driver.host", PropertiesModel.driver)
                 //.set("spark.dynamicAllocation.enabled", "false")
-                .setMaster(PropertiesModel.master);
+                .setMaster(PropertiesModel.spark_master);
         //.setMaster("local");
     }
 

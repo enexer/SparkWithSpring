@@ -7,11 +7,8 @@ public class TaskUrlDto {
 
     private String taskUrl;
     private String webUiUrl;
-
-    public TaskUrlDto(String taskUrl, String webUiUrl) {
-        this.taskUrl = taskUrl;
-        this.webUiUrl = webUiUrl;
-    }
+    private String appId;
+    private String appName;
 
     public String getTaskUrl() {
         return taskUrl;
@@ -27,5 +24,21 @@ public class TaskUrlDto {
 
     public void setWebUiUrl(String webUiUrl) {
         this.webUiUrl = webUiUrl;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public void setAppId(String appId) {
+        this.appId = appId;
+    }
+
+    public String getAppName() {
+        return appName;
+    }
+
+    public void setAppName(String appName) {
+        this.appName = appName;
     }
 }
