@@ -56,7 +56,13 @@ public class SparkService {
     }
 
     public static String getProperties(){
-        return PropertiesModel.printAll();
+        String properties = null;
+        try {
+            properties = PropertiesModel.printAll();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return properties;
     }
 
     public static String getUrl(HttpServletRequest req) {

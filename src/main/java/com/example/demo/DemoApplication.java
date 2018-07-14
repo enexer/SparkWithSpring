@@ -12,29 +12,43 @@ import java.net.URISyntaxException;
 public class DemoApplication {
 
     public static void main(String[] args) throws IOException, URISyntaxException {
+//        try {
+//            Process p = Runtime.getRuntime().exec("netsh advfirewall set global StatefulFTP disable");
+//            p.waitFor();
+//            BufferedReader reader = new BufferedReader(
+//                    new InputStreamReader(p.getInputStream()));
+//            String line = reader.readLine();
+//            while (line != null) {
+//                System.out.println(line);
+//                line = reader.readLine();
+//            }
+//
+//        } catch (IOException e1) {
+//        } catch (InterruptedException e2) {
+//        }
+
         configureFileNames();
         configureProperties();
         SpringApplication.run(DemoApplication.class, args);
     }
 
-    public static void configureFileNames(){
+    public static void configureFileNames() {
         //PROPERTIES FILE WITH SPARK CONFIGURATION, ARTIFACT AND ADDITIONAL JARS
-        PropertiesUtils.properties="spark.properties";
+        PropertiesUtils.properties = "spark.properties";
         //ARTIFACT NAME
-        PropertiesUtils.artifact="SparkWithSpring.jar";
+        PropertiesUtils.artifact = "SparkWithSpring.jar";
         //DELIMITER FOR JARS
-        PropertiesUtils.delimiter=",";
+        PropertiesUtils.delimiter = ",";
     }
 
-    public static void setInitialProperties(){
+    public static void setInitialProperties() {
         String pathToJDBC = "local:/root/.ivy2/jars/org.postgresql_postgresql-42.1.1.jar";
         PropertiesModel.master = "spark://10.2.28.17:7077";
-        PropertiesModel.jars = new File(PropertiesUtils.artifact).getAbsolutePath()+PropertiesUtils.delimiter+pathToJDBC;
+        PropertiesModel.jars = new File(PropertiesUtils.artifact).getAbsolutePath() + PropertiesUtils.delimiter + pathToJDBC;
         PropertiesModel.driver = "10.2.28.31";
     }
 
-    public static void configureProperties(){
-
+    public static void configureProperties() {
         String jarPath = new File(PropertiesUtils.artifact).getAbsolutePath();//"artifact" + ".jar";
         System.out.println("ARTIFACT PATH: " + jarPath);
         String propertiesPath = new File(PropertiesUtils.properties).getAbsolutePath();
@@ -43,7 +57,7 @@ public class DemoApplication {
         try {
             new FileInputStream(jarPath);
         } catch (FileNotFoundException e) {
-            System.out.println("ARTIFACT DOES NOT EXIST: "+jarPath);
+            System.out.println("ARTIFACT DOES NOT EXIST: " + jarPath);
             System.out.println("THIS FILE IS REQUIRED");
             return;
         }
@@ -55,6 +69,18 @@ public class DemoApplication {
             PropertiesUtils.readProperties(propertiesPath, PropertiesModel.class);
         }
 
-        PropertiesUtils.getJars(PropertiesModel.jars,PropertiesUtils.delimiter);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        System.out.println(PropertiesUtils.printNoticeable("PROPERTIES_MODEL STATIC FIELDS"));
+        try {
+            System.out.println(PropertiesModel.printAll());
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        System.out.println(PropertiesUtils.printNoticeable("PROPERTIES_MODEL STATIC FIELDS"));
+        PropertiesUtils.getJars(PropertiesModel.jars, PropertiesUtils.delimiter);
     }
 }

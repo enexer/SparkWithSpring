@@ -34,11 +34,21 @@ public class Controller {
         conf = new SparkConf()
                 .setAppName("Apache_Spark_Application")
                 .set("spark.driver.allowMultipleContexts", "true")
-                .set("spark.executor.memory", "4g")
+                .set("spark.executor.memory", "1g")
+                //.set("spark.submit.deployMode", "cluster") //
+                //.set("spark.driver.port", "51310") //
+                ///
+                .set("spark.cores.max","4")
+                ///
+                .set("spark.eventLog.enabled", "true")
+                //.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+//                .set("spark.shuffle.service.enabled", "false")
+//                .set("spark.dynamicAllocation.enabled", "false")
+//                .set("spark.io.compression.codec", "snappy")
+//                .set("spark.rdd.compress", "true")
                 //.set("spark.executor.cores", "4c")
                 //.setJars(new String[]{PropertiesModel.jars, PropertiesModel.databaseJar})
                 .setJars(PropertiesUtils.getJars(PropertiesModel.jars,PropertiesUtils.delimiter))
-                // DLA KLASTRA ZMIENIC LUB USUNAC
                 .set("spark.driver.host", PropertiesModel.driver)
                 //.set("spark.dynamicAllocation.enabled", "false")
                 .setMaster(PropertiesModel.master);

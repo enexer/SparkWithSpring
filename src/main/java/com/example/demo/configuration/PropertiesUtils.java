@@ -15,9 +15,9 @@ import java.util.stream.Collectors;
  */
 public class PropertiesUtils {
 
-    public static String delimiter;
-    public static String properties;
-    public static String artifact;
+    public static String delimiter = "";
+    public static String properties = "";
+    public static String artifact = "";
 
     public static boolean readProperties(String fullPath, Class c) {
         System.out.println(printNoticeable("READ PROPERTIES"));
@@ -41,18 +41,20 @@ public class PropertiesUtils {
         System.out.println(printNoticeable("PROPERTIES"));
 
         properties.stringPropertyNames().forEach(s -> {
-//            if (s.equals("master")){
-//                PropertiesModel.master=properties.getProperty(s);
-//            }else if(s.equals("appJar")){
-//                PropertiesModel.appJar=properties.getProperty(s);
+//            if (s.equals("master")) {
+//                PropertiesModel.master = properties.getProperty(s);
+//            } else if (s.equals("jars")) {
+//                PropertiesModel.jars = properties.getProperty(s);
 //            }
 
             for (Field f : c.getDeclaredFields()){
                 try {
-                    PropertiesModel.setValue(f.getName(), s, c);
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
+                    f.setAccessible(true);
+                    if (s.equals(f.getName())){
+                        f.set(f.getName(),properties.getProperty(s));
+                    }
+                    //PropertiesModel.setValue(f.getName(), s, c);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -119,18 +121,18 @@ public class PropertiesUtils {
     }
 
     public static String[] getJars(String input, String delimiter) {
-        if (input==null){
-            throw new NullPointerException("String with jars with provided delimiter '"+delimiter+"' is empty. Check "+properties+".");
+        if (input == null) {
+            throw new NullPointerException("String with jars with provided delimiter '" + delimiter + "' is empty. Check " + properties + ".");
         }
         String[] jars = Arrays.stream(input.split(delimiter))
                 // REMOVE WHITESPACES
-                .map(s -> s.replaceAll("\\s+",""))
+                .map(s -> s.replaceAll("\\s+", ""))
                 .collect(Collectors.toList()).toArray(new String[]{});
         return jars;
     }
 
-    public static String printNoticeable(String name){
-        String lines ="---------------------------";
-        return lines+name+lines;
+    public static String printNoticeable(String name) {
+        String lines = "---------------------------";
+        return lines + name + lines;
     }
 }
