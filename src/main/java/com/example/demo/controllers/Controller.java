@@ -67,7 +67,7 @@ public class Controller {
     }
 
     // GET TASK BY ID
-    @GetMapping(value = "/{id}")
+    @GetMapping(value = "/get/{id}")
     public ResponseEntity<TaskModel> getTask(@PathVariable String id) {
         return new ResponseEntity<>(sparkService.getTask(runningTasks, id), HttpStatus.OK);
     }

@@ -66,7 +66,7 @@ public class SparkService {
     public JavaSparkContext configureSpark(SparkConf conf) {
         SparkContext context;
         try {
-            context = new SparkContext(conf);
+            context = SparkContext.getOrCreate(conf); //new SparkContext(conf);
         } catch (Exception e) {
             throw new SparkMasterUrlException(e.getMessage());
         }
@@ -94,7 +94,7 @@ public class SparkService {
     }
 
     public static String getUrl(HttpServletRequest req) {
-        return getBaseUrl(req) + "/";
+        return getBaseUrl(req);
     }
 
     public static String getBaseUrl(HttpServletRequest req) {
@@ -146,7 +146,7 @@ public class SparkService {
         runningTasks.put(uuid, new TaskModel(true, uuid, time, jsc, task));
         new Thread(() -> sparkApplicationService.startTask(uuid, runningTasks)).start();
         TaskUrlDto taskUrlDto = new TaskUrlDto();
-        taskUrlDto.setTaskUrl(getUrl(request) + uuid.toString());
+        taskUrlDto.setTaskUrl(getUrl(request) +"/get/"+ uuid.toString());
         taskUrlDto.setWebUiUrl(jsc.sc().uiWebUrl().get());
         taskUrlDto.setAppId(jsc.sc().applicationId());
         taskUrlDto.setAppName(jsc.sc().appName());
