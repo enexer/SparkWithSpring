@@ -53,9 +53,15 @@ public class DemoApplication {
         String pathToJDBC = "local:/root/.ivy2/jars/org.postgresql_postgresql-42.1.1.jar";
         PropertiesModel.spark_master = "spark://10.2.28.17:7077";
         PropertiesModel.jars = new File(PropertiesUtils.artifact).getAbsolutePath() + PropertiesUtils.delimiter + pathToJDBC;
-        PropertiesModel.spark_driver_host = "10.2.28.31";
+        PropertiesModel.spark_driver_host = "10.2.28.34";
         PropertiesModel.spark_driver_port = "55550";
         PropertiesModel.spark_blockManager_port ="55551";
+        PropertiesModel.spark_eventLog_enabled = "true";
+        // database connection settings
+        PropertiesModel.db_url = "jdbc:postgresql://10.2.28.17:5432/postgres";
+        PropertiesModel.db_user = "postgres";
+        PropertiesModel.db_password = "postgres";
+        PropertiesModel.db_table = "dane2";
     }
 
     public static void setInitialPropertiesLocal() {
@@ -68,6 +74,12 @@ public class DemoApplication {
         }
         PropertiesModel.spark_driver_port = "55550";
         PropertiesModel.spark_blockManager_port ="55551";
+        PropertiesModel.spark_eventLog_enabled = "false"; // fail to delete appfiles
+        // database connection settings
+        PropertiesModel.db_url = "jdbc:postgresql://10.2.28.17:5432/postgres";
+        PropertiesModel.db_user = "postgres";
+        PropertiesModel.db_password = "postgres";
+        PropertiesModel.db_table = "dane2";
     }
 
     public static void configureProperties() {

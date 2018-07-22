@@ -1,6 +1,7 @@
 package com.example.demo.services;
 
 import com.example.demo.configuration.PropertiesModel;
+import com.example.demo.configuration.PropertiesUtils;
 import com.example.demo.configuration.SparkConfiguartion;
 import com.example.demo.dto.TaskUrlDto;
 import com.example.demo.dto.TasksInfoDto;
@@ -29,17 +30,44 @@ import java.util.stream.Collectors;
 public class SparkService {
 
     private SparkApplicationService sparkApplicationService;
+    private SparkConf conf;
+    //private SparkContext context;
 
     @Autowired
     public SparkService(SparkApplicationService sparkApplicationService) {
         this.sparkApplicationService = sparkApplicationService;
+
+        conf = new SparkConf()
+                .setAppName("Apache_Spark_ApplicationOK")
+                .set("spark.driver.allowMultipleContexts", "true")
+                .set("spark.executor.memory", "1g")
+                //.set("spark.submit.deployMode", "cluster") // startPort should be between 1024 and 65535 (inclusive), or 0 for a random free port.
+                .set("spark.driver.host", PropertiesModel.spark_driver_host)
+                .set("spark.driver.port", PropertiesModel.spark_driver_port) //
+                .set("spark.blockManager.port", PropertiesModel.spark_blockManager_port) // Raw socket via ServerSocketChannel
+                .set("spark.cores.max", "4")
+                .set("spark.eventLog.enabled", PropertiesModel.spark_eventLog_enabled)
+                //.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
+//                .set("spark.shuffle.service.enabled", "false")
+//                .set("spark.dynamicAllocation.enabled", "false")
+//                .set("spark.io.compression.codec", "snappy")
+//                .set("spark.rdd.compress", "true")
+                //.set("spark.executor.cores", "4c")
+                //.setJars(new String[]{PropertiesModel.jars, PropertiesModel.databaseJar})
+                .setJars(PropertiesUtils.getJars(PropertiesModel.jars, PropertiesUtils.delimiter))
+                //.set("spark.dynamicAllocation.enabled", "false")
+                .setMaster(PropertiesModel.spark_master);
+        //.setMaster("local");
+        //context = new SparkContext(conf);
+
+        System.out.println("----------------------sparkService-constr");
     }
 
     public JavaSparkContext configureSpark(SparkConf conf) {
         SparkContext context;
         try {
             context = new SparkContext(conf);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new SparkMasterUrlException(e.getMessage());
         }
         JavaSparkContext jsc = new JavaSparkContext(context);
@@ -55,7 +83,7 @@ public class SparkService {
         return list;
     }
 
-    public static String getProperties(){
+    public static String getProperties() {
         String properties = null;
         try {
             properties = PropertiesModel.printAll();
@@ -66,7 +94,7 @@ public class SparkService {
     }
 
     public static String getUrl(HttpServletRequest req) {
-        return getBaseUrl(req)+"/";
+        return getBaseUrl(req) + "/";
     }
 
     public static String getBaseUrl(HttpServletRequest req) {
@@ -95,16 +123,16 @@ public class SparkService {
         return new TasksInfoDto(total, running, finished, runningSparkContexts);
     }
 
-    public String setMaster(SparkConf conf, String master) {
+    public String setMaster(String master) {
         conf.setMaster(master);
         return conf.get("spark.master");
     }
 
-    public String getMaster(SparkConf conf) {
+    public String getMaster() {
         return conf.get("spark.master");
     }
 
-    public TaskUrlDto startTask(Hashtable<UUID, TaskModel> runningTasks, SparkConf conf, HttpServletRequest request, String task) {
+    public TaskUrlDto startTask(Hashtable<UUID, TaskModel> runningTasks, HttpServletRequest request, String task) {
 
         int maxTasks = SparkConfiguartion.MAX_RUNNING_TASKS;
         int running = (int) runningTasks.entrySet().stream().filter(s -> s.getValue().getRunning().booleanValue() == true).count();
@@ -119,11 +147,11 @@ public class SparkService {
         new Thread(() -> sparkApplicationService.startTask(uuid, runningTasks)).start();
         TaskUrlDto taskUrlDto = new TaskUrlDto();
         taskUrlDto.setTaskUrl(getUrl(request) + uuid.toString());
-        taskUrlDto.setWebUiUrl( jsc.sc().uiWebUrl().get());
+        taskUrlDto.setWebUiUrl(jsc.sc().uiWebUrl().get());
         taskUrlDto.setAppId(jsc.sc().applicationId());
         taskUrlDto.setAppName(jsc.sc().appName());
         return taskUrlDto;
-       // return new TaskUrlDto(getUrl(request) + uuid.toString(), jsc.sc().uiWebUrl().get());
+        // return new TaskUrlDto(getUrl(request) + uuid.toString(), jsc.sc().uiWebUrl().get());
     }
 
     public TaskModel getTask(Hashtable<UUID, TaskModel> runningTasks, String id) {

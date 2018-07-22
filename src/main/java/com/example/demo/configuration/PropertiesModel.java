@@ -13,6 +13,11 @@ public class PropertiesModel {
     public static String spark_driver_host = "";
     public static String spark_driver_port = "";
     public static String spark_blockManager_port = "";
+    public static String spark_eventLog_enabled = "";
+    public static String db_url = "";
+    public static String db_user = "";
+    public static String db_password = "";
+    public static String db_table = "";
 
     public static String printAll() throws IllegalAccessException {
         StringBuffer stringBuffer = new StringBuffer();

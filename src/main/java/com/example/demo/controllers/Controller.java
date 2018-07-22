@@ -8,6 +8,7 @@ import com.example.demo.models.TaskModel;
 import com.example.demo.services.SparkApplicationService;
 import com.example.demo.services.SparkService;
 import org.apache.spark.SparkConf;
+import org.apache.spark.SparkContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,38 +22,12 @@ import java.util.*;
  */
 @RestController
 public class Controller {
-    private SparkApplicationService sparkApplicationService;
     private SparkService sparkService;
     private volatile static Hashtable<UUID, TaskModel> runningTasks = new Hashtable<>();
-    private SparkConf conf;
 
     @Autowired
     public Controller(SparkService sparkService, SparkApplicationService sparkApplicationService) {
         this.sparkService = sparkService;
-        this.sparkApplicationService = sparkApplicationService;
-
-        conf = new SparkConf()
-                .setAppName("Apache_Spark_Application")
-                .set("spark.driver.allowMultipleContexts", "true")
-                .set("spark.executor.memory", "1g")
-                //.set("spark.submit.deployMode", "cluster") // startPort should be between 1024 and 65535 (inclusive), or 0 for a random free port.
-                .set("spark.driver.host", PropertiesModel.spark_driver_host)
-                .set("spark.driver.port", PropertiesModel.spark_driver_port) //
-                .set("spark.blockManager.port", PropertiesModel.spark_blockManager_port) // Raw socket via ServerSocketChannel
-                ///
-                .set("spark.cores.max","4")
-                .set("spark.eventLog.enabled", "true")
-                //.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-//                .set("spark.shuffle.service.enabled", "false")
-//                .set("spark.dynamicAllocation.enabled", "false")
-//                .set("spark.io.compression.codec", "snappy")
-//                .set("spark.rdd.compress", "true")
-                //.set("spark.executor.cores", "4c")
-                //.setJars(new String[]{PropertiesModel.jars, PropertiesModel.databaseJar})
-                .setJars(PropertiesUtils.getJars(PropertiesModel.jars,PropertiesUtils.delimiter))
-                //.set("spark.dynamicAllocation.enabled", "false")
-                .setMaster(PropertiesModel.spark_master);
-        //.setMaster("local");
     }
 
     // GET ALL TASKS
@@ -76,19 +51,19 @@ public class Controller {
     // SET MASTER
     @GetMapping("/master/set")
     public ResponseEntity<String> setMaster(@RequestParam(name = "master", required = false, defaultValue = "local") String master) {
-        return new ResponseEntity<>(sparkService.setMaster(conf, master), HttpStatus.OK);
+        return new ResponseEntity<>(sparkService.setMaster(master), HttpStatus.OK);
     }
 
     // GET MASTER
     @GetMapping(value = "/master")
     public ResponseEntity<String> getMaster() {
-        return new ResponseEntity<>(sparkService.getMaster(conf), HttpStatus.OK);
+        return new ResponseEntity<>(sparkService.getMaster(), HttpStatus.OK);
     }
 
     // START TASK
     @GetMapping(value = "/start")
     public ResponseEntity<TaskUrlDto> startTask(@RequestParam(name = "task", required = false, defaultValue = "1") String task, HttpServletRequest request) {
-        return new ResponseEntity<>(sparkService.startTask(runningTasks, conf, request, task), HttpStatus.OK);
+        return new ResponseEntity<>(sparkService.startTask(runningTasks, request, task), HttpStatus.OK);
     }
 
     // GET TASK BY ID
