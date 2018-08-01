@@ -31,6 +31,7 @@ public class SparkService {
 
     private SparkApplicationService sparkApplicationService;
     private SparkConf conf;
+    private volatile static Hashtable<UUID, TaskModel> runningTasks = new Hashtable<>();
     //private SparkContext context;
 
     @Autowired
@@ -74,7 +75,7 @@ public class SparkService {
         return jsc;
     }
 
-    public List<TaskModel> getAllTasks(Hashtable<UUID, TaskModel> runningTasks) {
+    public List<TaskModel> getAllTasks() {
         List<TaskModel> list = runningTasks.entrySet()
                 .stream()
                 .map(s -> s.getValue())
@@ -101,7 +102,7 @@ public class SparkService {
         return req.getScheme() + "://" + req.getServerName() + ":" + req.getServerPort() + req.getContextPath();
     }
 
-    public TasksInfoDto getTasksInfo(Hashtable<UUID, TaskModel> runningTasks) {
+    public TasksInfoDto getTasksInfo() {
 
         int running = (int) runningTasks.entrySet()
                 .stream()
@@ -132,7 +133,7 @@ public class SparkService {
         return conf.get("spark.master");
     }
 
-    public TaskUrlDto startTask(Hashtable<UUID, TaskModel> runningTasks, HttpServletRequest request, String task) {
+    public TaskUrlDto startTask(HttpServletRequest request, String task) {
 
         int maxTasks = SparkConfiguartion.MAX_RUNNING_TASKS;
         int running = (int) runningTasks.entrySet().stream().filter(s -> s.getValue().getRunning().booleanValue() == true).count();
@@ -154,20 +155,20 @@ public class SparkService {
         // return new TaskUrlDto(getUrl(request) + uuid.toString(), jsc.sc().uiWebUrl().get());
     }
 
-    public TaskModel getTask(Hashtable<UUID, TaskModel> runningTasks, String id) {
+    public TaskModel getTask(String id) {
         if (!Optional.ofNullable(runningTasks.get(UUID.fromString(id))).isPresent()) {
             throw new TaskNotFoundException("Task with id=" + id + " not found.");
         }
         return runningTasks.get(UUID.fromString(id));
     }
 
-    public TaskModel stopTaskById(Hashtable<UUID, TaskModel> runningTasks, String id) {
+    public TaskModel stopTaskById(String id) {
         runningTasks.get(UUID.fromString(id)).setRunning(false);
         runningTasks.get(UUID.fromString(id)).stopTask();
         return runningTasks.get(UUID.fromString(id));
     }
 
-    public String stopAllTasks(Hashtable<UUID, TaskModel> runningTasks) {
+    public String stopAllTasks() {
 
         runningTasks.entrySet()
                 .stream()
@@ -179,7 +180,7 @@ public class SparkService {
         return "stopped all tasks";
     }
 
-    public String clean(Hashtable<UUID, TaskModel> runningTasks) {
+    public String clean() {
 
         int running = (int) runningTasks.entrySet()
                 .stream()
