@@ -78,6 +78,7 @@ public class SparkApplicationService {
 
     public String sparkTask(JavaSparkContext jsc, String task, boolean stopContext) {
         String ww = null;
+
         if (task.equals("1")) {
             ww = computePi(jsc);
         } else if (task.equals("2")) {
@@ -85,9 +86,8 @@ public class SparkApplicationService {
         } else if (task.equals("3")) {
             ww = TestClustering.dbTest(jsc);
         }
-        if (stopContext) {
-            jsc.stop();
-        }
+
+        if (stopContext) {jsc.stop();}
         return ww;
     }
 
@@ -111,8 +111,7 @@ public class SparkApplicationService {
         return memDataSet.getDs();
     }
 
-    ////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////
+    //////////////////////////SPARK TEST JOB//////////////////////////////////////////
 
     public static String computePi(JavaSparkContext jsc) {
 

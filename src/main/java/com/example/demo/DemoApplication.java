@@ -19,27 +19,11 @@ import java.util.Arrays;
 @SpringBootApplication
 public class DemoApplication {
 
+    /**
+     * To avoid problems with BlockManager connection (Raw socket via ServerSocketChannel) while deploying jar,
+     * try to disable firewall or add firewall exception for java.
+     */
     public static void main(String[] args) throws IOException, URISyntaxException {
-
-        // new SocketPermission("10.2.28.31:55555", "accept,connect,listen"); //resolve ???
-
-
-//        try {
-//            Process p = Runtime.getRuntime().exec("netsh advfirewall set global StatefulFTP disable");
-//            p.waitFor();
-//            BufferedReader reader = new BufferedReader(
-//                    new InputStreamReader(p.getInputStream()));
-//            String line = reader.readLine();
-//            while (line != null) {
-//                System.out.println(line);
-//                line = reader.readLine();
-//            }
-//
-//        } catch (IOException e1) {
-//        } catch (InterruptedException e2) {
-//        }
-        //System.getProperties().stringPropertyNames().stream().forEach(s-> System.out.println(s+" = "+System.getProperties().getProperty(s)));
-
         configureFileNames();
         configureProperties();
         SpringApplication.run(DemoApplication.class, args);
@@ -60,7 +44,7 @@ public class DemoApplication {
         PropertiesModel.jars = new File(PropertiesUtils.artifact).getAbsolutePath() + PropertiesUtils.delimiter + pathToJDBC;
         PropertiesModel.spark_driver_host = "10.2.28.34";
         PropertiesModel.spark_driver_port = "55550";
-        PropertiesModel.spark_blockManager_port ="55551";
+        PropertiesModel.spark_blockManager_port = "55551";
         PropertiesModel.spark_eventLog_enabled = "true";
         // database connection settings
         PropertiesModel.db_url = "jdbc:postgresql://10.2.28.17:5432/postgres";
@@ -78,7 +62,7 @@ public class DemoApplication {
             e.printStackTrace();
         }
         PropertiesModel.spark_driver_port = "55550";
-        PropertiesModel.spark_blockManager_port ="55551";
+        PropertiesModel.spark_blockManager_port = "55551";
         PropertiesModel.spark_eventLog_enabled = "false"; // fail to delete appfiles
         // database connection settings
         PropertiesModel.db_url = "jdbc:postgresql://10.2.28.17:5432/postgres";
@@ -122,5 +106,32 @@ public class DemoApplication {
         }
         System.out.println(PropertiesUtils.printNoticeable("PROPERTIES_MODEL STATIC FIELDS"));
         PropertiesUtils.getJars(PropertiesModel.jars, PropertiesUtils.delimiter);
+    }
+
+    /**
+     * Try to resolve problems with BlockManager while deploying jar.
+     */
+    public void enableSockets() {
+
+        String host = PropertiesModel.spark_driver_host;
+        String port = PropertiesModel.spark_blockManager_port;
+
+        new SocketPermission(host + ":" + port, "accept,connect,listen");
+
+        try {
+            Process p = Runtime.getRuntime().exec("netsh advfirewall set global StatefulFTP disable");
+            p.waitFor();
+            BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(p.getInputStream()));
+            String line = reader.readLine();
+            while (line != null) {
+                System.out.println(line);
+                line = reader.readLine();
+            }
+
+        } catch (IOException e1) {
+        } catch (InterruptedException e2) {
+        }
+        System.getProperties().stringPropertyNames().stream().forEach(s -> System.out.println(s + " = " + System.getProperties().getProperty(s)));
     }
 }
