@@ -133,9 +133,21 @@ public class SparkService {
         return conf.get("spark.master");
     }
 
+    /**
+     * Method for initialize spark job.
+     * Only one job can running at once in JVM instance.
+     * When sparkContext object is created then spark job can be executed.
+     * To execute multiple spark jobs together, sparkContext should running and spark jobs must use it.
+     * When a few spark jobs are running with the same sparkContext, Spark WebUI treat all jobs as stages of main job.
+     *
+     * @param request
+     * @param task
+     * @return
+     */
     public TaskUrlDto startTask(HttpServletRequest request, String task) {
 
-        int maxTasks = SparkConfiguartion.MAX_RUNNING_TASKS;
+        int maxTasks = SparkConfiguartion.MAX_RUNNING_TASKS; //10;
+        boolean stopContextAfterExecution = true; // false for multiple jobs at once.
         int running = (int) runningTasks.entrySet().stream().filter(s -> s.getValue().getRunning().booleanValue() == true).count();
         if (running >= maxTasks) {
             throw new TaskExistException("Cannot start new task, running tasks limit=" + maxTasks);
@@ -145,7 +157,7 @@ public class SparkService {
         UUID uuid = UUID.randomUUID();
         JavaSparkContext jsc = configureSpark(conf);
         runningTasks.put(uuid, new TaskModel(true, uuid, time, jsc, task));
-        new Thread(() -> sparkApplicationService.startTask(uuid, runningTasks)).start();
+        new Thread(() -> sparkApplicationService.startTask(uuid, runningTasks, stopContextAfterExecution)).start();
         TaskUrlDto taskUrlDto = new TaskUrlDto();
         taskUrlDto.setTaskUrl(getUrl(request) +"/get/"+ uuid.toString());
         taskUrlDto.setWebUiUrl(jsc.sc().uiWebUrl().get());

@@ -30,7 +30,7 @@ import java.util.UUID;
 public class SparkApplicationService {
 
     @Async
-    public void startTask(UUID uuid, Hashtable<UUID, TaskModel> runningTasks) {
+    public void startTask(UUID uuid, Hashtable<UUID, TaskModel> runningTasks, boolean stopContext) {
 
         long startMillis = 0;
 
@@ -48,7 +48,7 @@ public class SparkApplicationService {
 
             try {
                 startMillis = System.currentTimeMillis();
-                res = sparkTask(jsc, task);
+                res = sparkTask(jsc, task, stopContext);
             } catch (Throwable t) {
                 runningTasks.get(uuid)
                         .setRunning(false)
@@ -76,7 +76,7 @@ public class SparkApplicationService {
     }
 
 
-    public String sparkTask(JavaSparkContext jsc, String task) {
+    public String sparkTask(JavaSparkContext jsc, String task, boolean stopContext) {
         String ww = null;
         if (task.equals("1")) {
             ww = computePi(jsc);
@@ -85,7 +85,9 @@ public class SparkApplicationService {
         } else if (task.equals("3")) {
             ww = TestClustering.dbTest(jsc);
         }
-        jsc.stop();
+        if (stopContext) {
+            jsc.stop();
+        }
         return ww;
     }
 
