@@ -5,18 +5,28 @@ package com.example.demo.dto;
  */
 public class TaskUrlDto {
 
-    private String taskUrl;
+    private String taskUUID;
+    private String taskResultUrl;
+    private String taskDetailsUrl;
     private String webUiUrl;
     private String appId;
     private String appName;
 
-    public String getTaskUrl() {
-        return taskUrl;
+    public String getTaskUUID() { return taskUUID; }
+
+    public void setTaskUUID(String taskUUID) { this.taskUUID = taskUUID; }
+
+    public String getTaskResultUrl() {
+        return taskResultUrl;
     }
 
-    public void setTaskUrl(String taskUrl) {
-        this.taskUrl = taskUrl;
+    public void setTaskResultUrl(String taskResultUrl) {
+        this.taskResultUrl = taskResultUrl;
     }
+
+    public String getTaskDetailsUrl() { return taskDetailsUrl; }
+
+    public void setTaskDetailsUrl(String taskDetailsUrl) { this.taskDetailsUrl = taskDetailsUrl; }
 
     public String getWebUiUrl() {
         return webUiUrl;

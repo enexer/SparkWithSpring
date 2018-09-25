@@ -10,13 +10,11 @@ import com.example.demo.exceptions.SparkMasterUrlException;
 import com.example.demo.exceptions.TaskExistException;
 import com.example.demo.exceptions.TaskNotFoundException;
 import com.example.demo.models.TaskModel;
-import io.swagger.models.auth.In;
 import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import scala.Int;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -164,7 +162,9 @@ public class SparkService {
         runningTasks.put(uuid, taskModel);
         new Thread(() -> sparkApplicationService.startTask(uuid, runningTasks, stopContextAfterExecution)).start();
         TaskUrlDto taskUrlDto = new TaskUrlDto();
-        taskUrlDto.setTaskUrl(getUrl(request) + "/getresult/" + uuid.toString());
+        taskUrlDto.setTaskUUID(uuid.toString());
+        taskUrlDto.setTaskResultUrl(getUrl(request) + "/getresult/" + uuid.toString());
+        taskUrlDto.setTaskDetailsUrl(getUrl(request) + "/get/" + uuid.toString());
         taskUrlDto.setWebUiUrl(jsc.sc().uiWebUrl().get());
         taskUrlDto.setAppId(jsc.sc().applicationId());
         taskUrlDto.setAppName(jsc.sc().appName());
