@@ -56,7 +56,7 @@ public class SparkController {
     }
 
     // START TASK
-    @PostMapping(value = "/start")
+    @GetMapping(value = "/start")
     public ResponseEntity<TaskUrlDto> startTask(@RequestParam(value = "type") TaskName taskName,
                                                 @RequestParam(value = "file") String file,
                                                 @RequestParam(value = "delimiter", defaultValue = ",") String fileDelimiter,
