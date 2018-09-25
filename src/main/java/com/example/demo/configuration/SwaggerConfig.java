@@ -22,4 +22,5 @@ public class SwaggerConfig {
                 .paths(PathSelectors.any())
                 .build();
     }
+    // Swagger url: localhost:8080/swagger-ui.html
 }

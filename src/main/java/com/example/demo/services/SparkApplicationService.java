@@ -37,9 +37,9 @@ public class SparkApplicationService {
             if (jsc.sc().isStopped()) {
                 throw new SparkContextStoppedException("Cannot call methods on a stopped SparkContext.");
             }
+
             String res;
-            runningTasks.get(uuid).addContent("in progress...");
-            jsc.sc().log().info("###################################" + jsc.sc().logName());
+            runningTasks.get(uuid).addContent("In progress...");
 
             try {
                 startMillis = System.currentTimeMillis();
@@ -98,14 +98,14 @@ public class SparkApplicationService {
     }
 
     public Dataset<Row> loadData(JavaSparkContext jsc, String path) {
-        // only csv
+        // Only csv.
         SparkSession sparkSession = new SparkSession(jsc.sc());
         MemDataSet memDataSet = new MemDataSet(sparkSession);
         memDataSet.loadDataSetCSV(path);
         return memDataSet.getDs();
     }
 
-    // SPARK TEST JOB
+    // Spark test job.
     public static String computePi(JavaSparkContext jsc) {
 
         int NUM_SAMPLES = 100;
@@ -131,7 +131,7 @@ public class SparkApplicationService {
         }).count();
         String res = ("Pi is roughly " + 4.0 * count / NUM_SAMPLES);
 
-        //jsc.stop();  /// STOP CONTEXT !
+        //jsc.stop();  /// Stop context.
         return res;
     }
 }

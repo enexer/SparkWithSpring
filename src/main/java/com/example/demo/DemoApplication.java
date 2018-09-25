@@ -29,15 +29,21 @@ public class DemoApplication {
         SpringApplication.run(DemoApplication.class, args);
     }
 
+    /**
+     * Set dafault names.
+     */
     public static void configureFileNames() {
-        //PROPERTIES FILE WITH SPARK CONFIGURATION, ARTIFACT AND ADDITIONAL JARS
+        // Configuration file name.
         PropertiesUtils.properties = "spark.properties";
-        //ARTIFACT NAME
+        // Artifact file name.
         PropertiesUtils.artifact = "SparkWithSpring.jar";
-        //DELIMITER FOR JARS
+        // Delimiter for jars.
         PropertiesUtils.delimiter = ",";
     }
 
+    /**
+     * Cluster mode.
+     */
     public static void setInitialProperties() {
         String pathToJDBC = "local:/root/.ivy2/jars/org.postgresql_postgresql-42.1.1.jar";
         PropertiesModel.spark_master = "spark://10.2.28.17:7077";
@@ -46,13 +52,16 @@ public class DemoApplication {
         PropertiesModel.spark_driver_port = "55550";
         PropertiesModel.spark_blockManager_port = "55551";
         PropertiesModel.spark_eventLog_enabled = "true";
-        // database connection settings
+        // Database connection settings.
         PropertiesModel.db_url = "jdbc:postgresql://10.2.28.17:5432/postgres";
         PropertiesModel.db_user = "postgres";
         PropertiesModel.db_password = "postgres";
         PropertiesModel.db_table = "dane2";
     }
 
+    /**
+     * Local mode.
+     */
     public static void setInitialPropertiesLocal() {
         PropertiesModel.spark_master = "local";
         PropertiesModel.jars = new File(PropertiesUtils.artifact).getAbsolutePath();
@@ -86,7 +95,7 @@ public class DemoApplication {
         }
 
         if (!PropertiesUtils.readProperties(propertiesPath, PropertiesModel.class)) {
-            // SET INITIAL PROPERTIES VALUES
+            // Set initial properties values. Local or cluster.
             //setInitialProperties();
             setInitialPropertiesLocal();
             PropertiesUtils.createProperties(propertiesPath, PropertiesModel.class);

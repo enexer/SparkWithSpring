@@ -19,6 +19,11 @@ public class PropertiesModel {
     public static String db_password = "";
     public static String db_table = "";
 
+    /**
+     * Return actual properties.
+     * @return properties
+     * @throws IllegalAccessException
+     */
     public static String printAll() throws IllegalAccessException {
         StringBuffer stringBuffer = new StringBuffer();
         for (Field f: PropertiesModel.class.getDeclaredFields()){

@@ -38,24 +38,16 @@ public class PropertiesUtils {
         System.out.println(printNoticeable("PROPERTIES"));
 
         properties.stringPropertyNames().forEach(s -> {
-//            if (s.equals("master")) {
-//                PropertiesModel.master = properties.getProperty(s);
-//            } else if (s.equals("jars")) {
-//                PropertiesModel.jars = properties.getProperty(s);
-//            }
-
             for (Field f : c.getDeclaredFields()){
                 try {
                     f.setAccessible(true);
                     if (s.equals(f.getName())){
                         f.set(f.getName(),properties.getProperty(s));
                     }
-                    //PropertiesModel.setValue(f.getName(), s, c);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-
         });
 
         return true;
