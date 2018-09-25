@@ -1,5 +1,6 @@
 package com.example.demo.models;
 
+import com.example.demo.dto.enums.TaskName;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.spark.api.java.JavaSparkContext;
 
@@ -17,16 +18,20 @@ public class TaskModel {
     private LocalDateTime finishTime;
     private Long elapsedTime;
     private JavaSparkContext jsc;
-    private String task;
+    private TaskName task;
+    private String file;
+    private String fileDelimiter;
     private String appHistoryUrl;
 
-    public TaskModel(Boolean running, UUID uuid, LocalDateTime startTime, JavaSparkContext jsc, String task) {
+    public TaskModel(Boolean running, UUID uuid, LocalDateTime startTime, JavaSparkContext jsc, TaskName task, String file, String fileDelimiter) {
         this.running = running;
         this.uuid = uuid;
         this.startTime = startTime;
         this.jsc = jsc;
-        this.content = "Initialized";
+        this.content = "Task initialized.";
         this.task=task;
+        this.file=file;
+        this.fileDelimiter = fileDelimiter;
     }
 
     public void stopTask(){
@@ -96,11 +101,11 @@ public class TaskModel {
         return elapsedTime;
     }
 
-    public String getTask() {
+    public TaskName getTask() {
         return task;
     }
 
-    public void setTask(String task) {
+    public void setTask(TaskName task) {
         this.task = task;
     }
 
@@ -112,4 +117,23 @@ public class TaskModel {
         this.appHistoryUrl = appHistoryUrl;
         return this;
     }
+
+    public String getFile() {
+        return file;
+    }
+
+    public TaskModel setFile(String file) {
+        this.file = file;
+        return this;
+    }
+
+    public String getFileDelimiter() {
+        return fileDelimiter;
+    }
+
+    public TaskModel setFileDelimiter(String fileDelimiter) {
+        this.fileDelimiter = fileDelimiter;
+        return this;
+    }
+
 }

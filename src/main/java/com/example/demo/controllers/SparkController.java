@@ -2,6 +2,7 @@ package com.example.demo.controllers;
 
 import com.example.demo.dto.TaskUrlDto;
 import com.example.demo.dto.TasksInfoDto;
+import com.example.demo.dto.enums.TaskName;
 import com.example.demo.models.TaskModel;
 import com.example.demo.services.SparkService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,15 +56,24 @@ public class SparkController {
     }
 
     // START TASK
-    @GetMapping(value = "/start")
-    public ResponseEntity<TaskUrlDto> startTask(@RequestParam(name = "task", required = false, defaultValue = "1") String task, HttpServletRequest request) {
-        return new ResponseEntity<>(sparkService.startTask(request, task), HttpStatus.OK);
+    @PostMapping(value = "/start")
+    public ResponseEntity<TaskUrlDto> startTask(@RequestParam(value = "type") TaskName taskName,
+                                                @RequestParam(value = "file") String file,
+                                                @RequestParam(value = "delimiter", defaultValue = ",") String fileDelimiter,
+                                                HttpServletRequest request) {
+        return new ResponseEntity<>(sparkService.startTask(request, taskName, file, fileDelimiter), HttpStatus.OK);
     }
 
     // GET TASK BY ID
     @GetMapping(value = "/get/{id}")
     public ResponseEntity<TaskModel> getTask(@PathVariable String id) {
         return new ResponseEntity<>(sparkService.getTask(id), HttpStatus.OK);
+    }
+
+    // GET TASK BY ID
+    @GetMapping(value = "/getresult/{id}")
+    public ResponseEntity<String> getTaskResult(@PathVariable String id) {
+        return new ResponseEntity<>(sparkService.getTaskResult(id), HttpStatus.OK);
     }
 
     // STOP TASK BY ID

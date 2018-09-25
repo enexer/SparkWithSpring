@@ -5,15 +5,18 @@ import com.example.demo.configuration.PropertiesUtils;
 import com.example.demo.configuration.SparkConfiguartion;
 import com.example.demo.dto.TaskUrlDto;
 import com.example.demo.dto.TasksInfoDto;
+import com.example.demo.dto.enums.TaskName;
 import com.example.demo.exceptions.SparkMasterUrlException;
 import com.example.demo.exceptions.TaskExistException;
 import com.example.demo.exceptions.TaskNotFoundException;
 import com.example.demo.models.TaskModel;
+import io.swagger.models.auth.In;
 import org.apache.spark.SparkConf;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import scala.Int;
 
 import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
@@ -38,7 +41,7 @@ public class SparkService {
         this.sparkApplicationService = sparkApplicationService;
 
         conf = new SparkConf()
-                .setAppName("Apache_Spark_ApplicationOK")
+                .setAppName("Spark_REST_API_Launcher")
                 .set("spark.driver.allowMultipleContexts", "true")
                 .set("spark.driver.host", PropertiesModel.spark_driver_host)
                 .set("spark.driver.port", PropertiesModel.spark_driver_port) //
@@ -140,8 +143,9 @@ public class SparkService {
      * @param task
      * @return
      */
-    public TaskUrlDto startTask(HttpServletRequest request, String task) {
+    public TaskUrlDto startTask(HttpServletRequest request, TaskName task, String file, String fileDelimiter) {
 
+        conf.setAppName(task.name());
         int maxTasks = SparkConfiguartion.MAX_RUNNING_TASKS; //10;
         boolean stopContextAfterExecution = true; // false for multiple jobs at once.
         int running = (int) runningTasks.entrySet().stream().filter(s -> s.getValue().getRunning().booleanValue() == true).count();
@@ -152,10 +156,11 @@ public class SparkService {
         LocalDateTime time = LocalDateTime.from(LocalDateTime.now());
         UUID uuid = UUID.randomUUID();
         JavaSparkContext jsc = configureSpark(conf);
-        runningTasks.put(uuid, new TaskModel(true, uuid, time, jsc, task));
+        TaskModel taskModel = new TaskModel(true, uuid, time, jsc, task, file, fileDelimiter);
+        runningTasks.put(uuid, taskModel);
         new Thread(() -> sparkApplicationService.startTask(uuid, runningTasks, stopContextAfterExecution)).start();
         TaskUrlDto taskUrlDto = new TaskUrlDto();
-        taskUrlDto.setTaskUrl(getUrl(request) + "/get/" + uuid.toString());
+        taskUrlDto.setTaskUrl(getUrl(request) + "/getresult/" + uuid.toString());
         taskUrlDto.setWebUiUrl(jsc.sc().uiWebUrl().get());
         taskUrlDto.setAppId(jsc.sc().applicationId());
         taskUrlDto.setAppName(jsc.sc().appName());
@@ -166,7 +171,21 @@ public class SparkService {
         if (!Optional.ofNullable(runningTasks.get(UUID.fromString(id))).isPresent()) {
             throw new TaskNotFoundException("Task with id=" + id + " not found.");
         }
-        return runningTasks.get(UUID.fromString(id));
+        return runningTasks.get(UUID.fromString(id)).setContent("-");
+    }
+
+    public String getTaskResult(String id){
+        if (!Optional.ofNullable(runningTasks.get(UUID.fromString(id))).isPresent()) {
+            throw new TaskNotFoundException("Task with id=" + id + " not found.");
+        }
+        String content = runningTasks.get(UUID.fromString(id)).getContent();
+        String content2 = content.replaceAll("\n","<br>");
+
+        return "<html>\n"+
+                "    <body>\n" +
+                "         <pre>"+content2+"</pre>\n" +
+                "    </body>\n" +
+                "</html>\n";
     }
 
     public TaskModel stopTaskById(String id) {
