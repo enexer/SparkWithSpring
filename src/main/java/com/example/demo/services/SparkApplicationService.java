@@ -43,11 +43,12 @@ public class SparkApplicationService {
             }
 
             String res;
-            runningTasks.get(uuid).addContent("In progress...\n");
+            runningTasks.get(uuid).addContent("In progress...\n\n");
 
             try {
                 startMillis = System.currentTimeMillis();
                 res = sparkTask(jsc, runningTasks.get(uuid), stopContext);
+                Thread.sleep(10000);
             } catch (Throwable t) {
                 runningTasks.get(uuid)
                         .setRunning(false)
@@ -141,7 +142,7 @@ public class SparkApplicationService {
         }
 
         if (stopContext) {
-            jsc.stop();
+            jsc.close();
         }
         return ww;
     }

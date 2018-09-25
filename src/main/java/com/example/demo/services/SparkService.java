@@ -47,6 +47,7 @@ public class SparkService {
                 .set("spark.driver.port", PropertiesModel.spark_driver_port) //
                 .set("spark.blockManager.port", PropertiesModel.spark_blockManager_port) // Raw socket via ServerSocketChannel
                 .set("spark.eventLog.enabled", PropertiesModel.spark_eventLog_enabled)
+                .set("spark.executor.instances", "1")
                 //.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
                 //.set("spark.shuffle.service.enabled", "false")
                 //.set("spark.dynamicAllocation.enabled", "false")
@@ -143,11 +144,14 @@ public class SparkService {
      * @param task
      * @return
      */
-    public TaskUrlDto startTask(HttpServletRequest request, TaskName task, String file, String fileDelimiter) {
+    public TaskUrlDto startTask(HttpServletRequest request, TaskName task, String file, String fileDelimiter, String memory, String cores, Boolean stopContext) {
 
         conf.setAppName(task.name());
+        conf.set("spark.executor.memory", memory);
+        conf.set("spark.executor.cores", cores);
+
         int maxTasks = SparkConfiguartion.MAX_RUNNING_TASKS; //10;
-        boolean stopContextAfterExecution = true; // false for multiple jobs at once.
+        boolean stopContextAfterExecution = stopContext; // false for multiple jobs at once.
         int running = (int) runningTasks.entrySet().stream().filter(s -> s.getValue().getRunning().booleanValue() == true).count();
         if (running >= maxTasks) {
             throw new TaskExistException("Cannot start new task, running tasks limit=" + maxTasks);
@@ -174,18 +178,36 @@ public class SparkService {
         return runningTasks.get(UUID.fromString(id)).setContent("-");
     }
 
-    public String getTaskResult(String id){
+    public String getTaskResult(String id) {
         if (!Optional.ofNullable(runningTasks.get(UUID.fromString(id))).isPresent()) {
             throw new TaskNotFoundException("Task with id=" + id + " not found.");
         }
-        String content = runningTasks.get(UUID.fromString(id)).getContent();
-        String content2 = content.replaceAll("\n","<br>");
+        TaskModel taskModel = runningTasks.get(UUID.fromString(id));
+        String content = taskModel.getContent();
+        String content2 = content.replaceAll("\n", "<br>");
+        String name = taskModel.getTask().name();
+        String webUiUrl = taskModel.getContext().sc().uiWebUrl().get();
 
-        return "<html>\n"+
+        String resultRunning = "<html>\n" +
                 "    <body>\n" +
-                "         <pre>"+content2+"</pre>\n" +
+                "         <h3>" + name + "</h3>" +
+                "         <a href='"+webUiUrl+"'>Spark WebUI</a>" +
+                "         <pre>" + content2 + "</pre>\n" +
                 "    </body>\n" +
                 "</html>\n";
+
+        String resultFinished = "<html>\n" +
+                "    <body>\n" +
+                "         <h3>" + name + "</h3>" +
+                "         <pre>" + content2 + "</pre>\n" +
+                "    </body>\n" +
+                "</html>\n";
+
+        if (!taskModel.getContext().sc().isStopped()) {
+            return resultRunning;
+        } else {
+            return resultFinished;
+        }
     }
 
     public TaskModel stopTaskById(String id) {

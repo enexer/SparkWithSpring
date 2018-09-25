@@ -60,8 +60,11 @@ public class SparkController {
     public ResponseEntity<TaskUrlDto> startTask(@RequestParam(value = "type") TaskName taskName,
                                                 @RequestParam(value = "file") String file,
                                                 @RequestParam(value = "delimiter", defaultValue = ",") String fileDelimiter,
+                                                @RequestParam(value = "memory", defaultValue = "15g") String memory,
+                                                @RequestParam(value = "cores", defaultValue = "12") String cores,
+                                                @RequestParam(value = "stopContext", defaultValue = "true") Boolean stopContext,
                                                 HttpServletRequest request) {
-        return new ResponseEntity<>(sparkService.startTask(request, taskName, file, fileDelimiter), HttpStatus.OK);
+        return new ResponseEntity<>(sparkService.startTask(request, taskName, file, fileDelimiter, memory, cores, stopContext), HttpStatus.OK);
     }
 
     // GET TASK BY ID
