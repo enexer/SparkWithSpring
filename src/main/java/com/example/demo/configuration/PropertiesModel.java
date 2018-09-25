@@ -32,44 +32,5 @@ public class PropertiesModel {
             stringBuffer.append(fieldName+" = "+fieldValue+System.lineSeparator());
         }
         return stringBuffer.toString();
-//        return PropertiesModel.master + "\n" +
-//                PropertiesModel.jars + "\n" +
-//                PropertiesModel.driver;
     }
-
-//    public static String getMaster() {
-//        return master;
-//    }
-//
-//    public static void setMaster(String master) {
-//        PropertiesModel.master = master;
-//    }
-//
-//    public static String getJars() {
-//        return jars;
-//    }
-//
-//    public static void setJars(String jars) {
-//        PropertiesModel.jars = jars;
-//    }
-//
-//    public static String getDriver() {
-//        return driver;
-//    }
-//
-//    public static void setDriver(String driver) {
-//        PropertiesModel.driver = driver;
-//    }
-
-//    public static void setValue(String name, String value, Class c) throws InvocationTargetException, IllegalAccessException {
-//        System.out.println("ssssssssssssssssssssss" + name + ", " + value);
-//        for (Method method : c.getClass().getMethods()) {
-//            if ((method.getName().startsWith("set")) && (method.getName().length() == (name.length() + 3))) {
-//                String expectedName = "set" + name;
-//                if (expectedName.toLowerCase().equals(method.getName().toLowerCase())) {
-//                    method.invoke(value);
-//                }
-//            }
-//        }
-//    }
 }

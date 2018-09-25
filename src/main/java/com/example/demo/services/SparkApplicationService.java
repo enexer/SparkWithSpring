@@ -4,8 +4,6 @@ import com.example.demo.configuration.PropertiesModel;
 import com.example.demo.exceptions.SparkContextStoppedException;
 import com.example.demo.models.TaskModel;
 import org.apache.spark.api.java.JavaSparkContext;
-import org.apache.spark.launcher.SparkAppHandle;
-import org.apache.spark.launcher.SparkLauncher;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -13,9 +11,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import sparktemplate.datasets.DBDataSet;
 import sparktemplate.datasets.MemDataSet;
-import sparktemplate.test.TestClustering;
-import sparktemplate.test.TestDBDataSet;
-import sun.plugin2.main.server.JVMInstance;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -57,9 +52,6 @@ public class SparkApplicationService {
                 return;
             }
 
-            //ConsoleProgressBar consoleProgressBar = new ConsoleProgressBar(jsc.sc());
-            //consoleProgressBar.log().info("HEHEHEE");
-
             runningTasks.get(uuid).addContent(res);
         }
 
@@ -82,12 +74,14 @@ public class SparkApplicationService {
         if (task.equals("1")) {
             ww = computePi(jsc);
         } else if (task.equals("2")) {
-            ww = TestDBDataSet.dbTest(jsc);
+            //ww = TestDBDataSet.dbTest(jsc);
         } else if (task.equals("3")) {
-            ww = TestClustering.dbTest(jsc);
+            //ww = TestClustering.dbTest(jsc);
         }
 
-        if (stopContext) {jsc.stop();}
+        if (stopContext) {
+            jsc.stop();
+        }
         return ww;
     }
 
@@ -107,12 +101,11 @@ public class SparkApplicationService {
         // only csv
         SparkSession sparkSession = new SparkSession(jsc.sc());
         MemDataSet memDataSet = new MemDataSet(sparkSession);
-        memDataSet.loadDataSet(path);
+        memDataSet.loadDataSetCSV(path);
         return memDataSet.getDs();
     }
 
-    //////////////////////////SPARK TEST JOB//////////////////////////////////////////
-
+    // SPARK TEST JOB
     public static String computePi(JavaSparkContext jsc) {
 
         int NUM_SAMPLES = 100;
@@ -138,8 +131,7 @@ public class SparkApplicationService {
         }).count();
         String res = ("Pi is roughly " + 4.0 * count / NUM_SAMPLES);
 
-        //jsc.stop();  /// STOP CONTEXT !!!!!!!!!!!!!!!!!!!!!!!!!
-
+        //jsc.stop();  /// STOP CONTEXT !
         return res;
     }
 }

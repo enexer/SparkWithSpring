@@ -16,11 +16,11 @@ import javax.servlet.http.HttpServletRequest;
  */
 @CrossOrigin
 @RestController
-public class Controller {
+public class SparkController {
     private SparkService sparkService;
 
     @Autowired
-    public Controller(SparkService sparkService) {
+    public SparkController(SparkService sparkService) {
         this.sparkService = sparkService;
     }
 

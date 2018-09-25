@@ -32,7 +32,6 @@ public class SparkService {
     private SparkApplicationService sparkApplicationService;
     private SparkConf conf;
     private volatile static Hashtable<UUID, TaskModel> runningTasks = new Hashtable<>();
-    //private SparkContext context;
 
     @Autowired
     public SparkService(SparkApplicationService sparkApplicationService) {
@@ -41,27 +40,24 @@ public class SparkService {
         conf = new SparkConf()
                 .setAppName("Apache_Spark_ApplicationOK")
                 .set("spark.driver.allowMultipleContexts", "true")
-                .set("spark.executor.memory", "1g")
-                //.set("spark.submit.deployMode", "cluster") // startPort should be between 1024 and 65535 (inclusive), or 0 for a random free port.
                 .set("spark.driver.host", PropertiesModel.spark_driver_host)
                 .set("spark.driver.port", PropertiesModel.spark_driver_port) //
                 .set("spark.blockManager.port", PropertiesModel.spark_blockManager_port) // Raw socket via ServerSocketChannel
-                .set("spark.cores.max", "4")
                 .set("spark.eventLog.enabled", PropertiesModel.spark_eventLog_enabled)
                 //.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer")
-//                .set("spark.shuffle.service.enabled", "false")
-//                .set("spark.dynamicAllocation.enabled", "false")
-//                .set("spark.io.compression.codec", "snappy")
-//                .set("spark.rdd.compress", "true")
+                //.set("spark.shuffle.service.enabled", "false")
+                //.set("spark.dynamicAllocation.enabled", "false")
+                //.set("spark.io.compression.codec", "snappy")
+                //.set("spark.rdd.compress", "true")
                 //.set("spark.executor.cores", "4c")
+                //.set("spark.executor.memory", "1g")
+                //.set("spark.cores.max", "4")
+                //.set("spark.dynamicAllocation.enabled", "false")
                 //.setJars(new String[]{PropertiesModel.jars, PropertiesModel.databaseJar})
                 .setJars(PropertiesUtils.getJars(PropertiesModel.jars, PropertiesUtils.delimiter))
-                //.set("spark.dynamicAllocation.enabled", "false")
                 .setMaster(PropertiesModel.spark_master);
-        //.setMaster("local");
-        //context = new SparkContext(conf);
 
-        System.out.println("----------------------sparkService-constr");
+        System.out.println("SparkService...");
     }
 
     public JavaSparkContext configureSpark(SparkConf conf) {
@@ -159,12 +155,11 @@ public class SparkService {
         runningTasks.put(uuid, new TaskModel(true, uuid, time, jsc, task));
         new Thread(() -> sparkApplicationService.startTask(uuid, runningTasks, stopContextAfterExecution)).start();
         TaskUrlDto taskUrlDto = new TaskUrlDto();
-        taskUrlDto.setTaskUrl(getUrl(request) +"/get/"+ uuid.toString());
+        taskUrlDto.setTaskUrl(getUrl(request) + "/get/" + uuid.toString());
         taskUrlDto.setWebUiUrl(jsc.sc().uiWebUrl().get());
         taskUrlDto.setAppId(jsc.sc().applicationId());
         taskUrlDto.setAppName(jsc.sc().appName());
         return taskUrlDto;
-        // return new TaskUrlDto(getUrl(request) + uuid.toString(), jsc.sc().uiWebUrl().get());
     }
 
     public TaskModel getTask(String id) {
